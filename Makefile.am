@@ -100,7 +100,8 @@ AM_CPPFLAGS = \
 	@READLINE_CPPFLAGS@ \
 	@ICU_CPPFLAGS@ \
 	@ZLIB_CPPFLAGS@ \
-	@V8_CPPFLAGS@
+	@V8_CPPFLAGS@ \
+        @ZEROMQ_CPPFLAGS@
 
 
 if ENABLE_RELATIVE
@@ -127,7 +128,8 @@ AM_LDFLAGS = \
 	@READLINE_LDFLAGS@ \
 	@ICU_LDFLAGS@ \
 	@ZLIB_LDFLAGS@ \
-	@V8_LDFLAGS@
+	@V8_LDFLAGS@ \
+        @ZEROMQ_LDFLAGS@
 
 ################################################################################
 ### @brief libraries
@@ -486,6 +488,12 @@ endif
 if ENABLE_ALL_IN_ONE_ICU
 include 3rdParty/Makefile.all-in-one-icu
 endif
+
+################################################################################
+### @brief ZEROMQ
+################################################################################
+
+include 3rdParty/Makefile.all-in-one-zeromq
 
 ## -----------------------------------------------------------------------------
 ## --SECTION--                                                       END-OF-FILE

@@ -185,6 +185,7 @@ ArangoServer::ArangoServer (int argc, char** argv)
     _databasePath(),
     _removeOnDrop(true),
     _removeOnCompacted(true),
+    _replicationPort(8528),
     _defaultMaximalSize(TRI_JOURNAL_DEFAULT_MAXIMAL_SIZE),
     _defaultWaitForSync(false),
     _forceSyncShapes(true),
@@ -367,10 +368,6 @@ void ArangoServer::buildApplicationServer () {
   // server options
   // .............................................................................
 
-  // .............................................................................
-  // for this server we display our own options such as port to use
-  // .............................................................................
-
   bool disableAdminInterface = false;
 
   additional[ApplicationServer::OPTIONS_SERVER + ":help-admin"]
@@ -389,6 +386,16 @@ void ArangoServer::buildApplicationServer () {
   additional["THREAD Options:help-admin"]
     ("server.threads", &_dispatcherThreads, "number of threads for basic operations")
   ;
+  
+  
+  // .............................................................................
+  // replication
+  // .............................................................................
+
+  additional[ApplicationServer::OPTIONS_REPLICATION]
+    ("replication.port", &_replicationPort, "port to run replication on")
+  ;
+
 
   // .............................................................................
   // endpoint server
@@ -442,7 +449,8 @@ void ArangoServer::buildApplicationServer () {
     LOGGER_DEBUG("setting nonce hash size to '" << optionNonceHashSize << "'" );
     Nonce::create(optionNonceHashSize);
   }
-
+  
+  
   // .............................................................................
   // disable access to the HTML admin interface
   // .............................................................................
@@ -498,7 +506,7 @@ void ArangoServer::buildApplicationServer () {
     TRI_EXIT_FUNCTION(res, NULL);
   }
 #endif
-
+  
   // if we got here, then we are in server mode
 
   // .............................................................................

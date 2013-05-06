@@ -11,9 +11,11 @@ mr-*.h
 .v8-build-64
 .icu-build-64
 .mruby-build-64
+.zeromq-build-64
 .zlib-build-64
 .libev-build-32
 .v8-build-32
+.zeromq-build-32
 .zlib-build-32
 .icu-build-32
 .mruby-build-32
@@ -21,6 +23,15 @@ mr-*.h
 .setup-js-directories
 3rdParty/libev/ARCH.x64/
 3rdParty/libev/ARCH.ia32/
+3rdParty/zeromq-3.2.3/builds/redhat/zeromq.spec
+3rdParty/zeromq-3.2.3/libtool
+3rdParty/zeromq-3.2.3/perf
+3rdParty/zeromq-3.2.3/src/*.la
+3rdParty/zeromq-3.2.3/src/*.lo
+3rdParty/zeromq-3.2.3/src/platform.hpp
+3rdParty/zeromq-3.2.3/src/stamp-h1
+3rdParty/zeromq-3.2.3/src/.libs/
+3rdParty/zeromq-3.2.3/tests
 3rdParty/zlib-1.2.7/
 
 Doxygen/doc/

@@ -1,0 +1,38 @@
+dnl -*- mode: Autoconf; -*-
+
+dnl -----------------------------------------------------------------------------------------
+dnl option for ZEROMQ support
+dnl -----------------------------------------------------------------------------------------
+
+ZEROMQ_CPPFLAGS="-I${srcdir}/3rdParty/zeromq-3.2.3/BUILD/include"
+ZEROMQ_LDFLAGS=""
+ZEROMQ_LIBS="${srcdir}/3rdParty/zeromq-3.2.3/BUILD/lib${tr_BITS}/libzmq.a -luuid -lrt"
+
+TRI_ZEROMQ_VERSION="3.2.3"
+
+dnl -----------------------------------------------------------------------------------------
+dnl add substitutions
+dnl -----------------------------------------------------------------------------------------
+
+AC_SUBST(ZEROMQ_CPPFLAGS)
+AC_SUBST(ZEROMQ_LDFLAGS)
+AC_SUBST(ZEROMQ_LIBS)
+
+ZEROMQ_CPPFLAGS="${ZEROMQ_CPPFLAGS} -DTRI_ZEROMQ_VERSION='\"${TRI_ZEROMQ_VERSION}\"'"
+
+dnl -----------------------------------------------------------------------------------------
+dnl informational output
+dnl -----------------------------------------------------------------------------------------
+
+LIB_INFO="$LIB_INFO|."
+LIB_INFO="$LIB_INFO|ZEROMQ: 3rdParty version"
+LIB_INFO="$LIB_INFO|ZEROMQ VERSION: ${TRI_ZEROMQ_VERSION}"
+
+LIB_INFO="$LIB_INFO|ZEROMQ_CPPFLAGS: ${ZEROMQ_CPPFLAGS}"
+LIB_INFO="$LIB_INFO|ZEROMQ_LDFLAGS:  ${ZEROMQ_LDFLAGS}"
+LIB_INFO="$LIB_INFO|ZEROMQ_LIBS:     ${ZEROMQ_LIBS}"
+
+dnl Local Variables:
+dnl mode: outline-minor
+dnl outline-regexp: "^\\(dnl --SECTION--\\)"
+dnl End:

@@ -316,7 +316,7 @@ namespace triagens {
 ///
 /// @CMDOPT{\--database.remove-on-compaction @CA{flag}}
 ///
-/// Normally the garbage collection will removed compacted datafile. For debug
+/// Normally the garbage collection will remove compacted datafiles. For debug
 /// purposes you can use this option to keep the old datafiles. You should
 /// never set it to @LIT{false} on a live system.
 ///
@@ -324,6 +324,18 @@ namespace triagens {
 ////////////////////////////////////////////////////////////////////////////////
 
         bool _removeOnCompacted;
+
+////////////////////////////////////////////////////////////////////////////////
+/// @brief port to run replication on
+///
+/// @CMDOPT{\--replication.port @CA{port}}
+///
+/// Port to run replication on.
+///
+/// The default is @LIT{8528}.
+////////////////////////////////////////////////////////////////////////////////
+
+        int _replicationPort;
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief default journal size
