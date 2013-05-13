@@ -29,10 +29,12 @@
 
 #include "BasicsC/conversions.h"
 #include "BasicsC/logging.h"
+#include "BasicsC/string-buffer.h"
 #include "BasicsC/tri-strings.h"
 
-#include "VocBase/primary-collection.h"
 #include "VocBase/document-collection.h"
+#include "VocBase/primary-collection.h"
+#include "VocBase/replication.h"
 #include "VocBase/vocbase.h"
 
 #define LOG_TRX(trx, level, format, ...) \
@@ -765,6 +767,8 @@ static int WriteOperations (TRI_transaction_t* const trx) {
     size_t i, j, n;
     size_t numCollections;
 
+    TRI_BeginTransactionReplication(trx->_id);
+
     n = trx->_collections._length;
     j = n;
     numCollections = CountWriteCollections(trx);
@@ -806,6 +810,8 @@ static int WriteOperations (TRI_transaction_t* const trx) {
 
         WriteCollectionAbort(trxCollection);
       }
+    
+      TRI_AbortTransactionReplication(trx->_id);
     }
     else {
       // everything fine here. now write prepare and|or commit markers...
@@ -822,6 +828,7 @@ static int WriteOperations (TRI_transaction_t* const trx) {
         if (numCollections == 1) {
           // directly write commit marker
           res = WriteCollectionCommit(trxCollection);
+          TRI_CommitTransactionReplication(trx->_id);
         }
         else {
           // write prepare marker first
@@ -872,7 +879,15 @@ static int WriteOperations (TRI_transaction_t* const trx) {
                                                         TRI_TRANSACTION_WRITE, 
                                                         RemoveTrxCallback, 
                                                         &coordinator);
+          
           }
+        }
+
+        if (res == TRI_ERROR_NO_ERROR) {
+          TRI_CommitTransactionReplication(trx->_id);
+        }
+        else {
+          TRI_AbortTransactionReplication(trx->_id);
         }
 
         if (coordinator._key != NULL) {
@@ -1705,6 +1720,8 @@ int TRI_AddOperationCollectionTransaction (TRI_transaction_collection_t* trxColl
   
   if (trx->_hints & ((TRI_transaction_hint_t) TRI_TRANSACTION_HINT_SINGLE_OPERATION)) {
     // just one operation in the transaction. we can write the marker directly
+    const bool doSync = (syncRequested || trxCollection->_waitForSync || trx->_waitForSync);
+
     // TODO: error checking
     res = TRI_WriteOperationDocumentCollection((TRI_document_collection_t*) primary,
                                                type,
@@ -1713,8 +1730,13 @@ int TRI_AddOperationCollectionTransaction (TRI_transaction_collection_t* trxColl
                                                oldData,
                                                marker, 
                                                totalSize,
-                                               syncRequested || trxCollection->_waitForSync || trx->_waitForSync);
+                                               doSync);
     *written = true;
+
+    if (res == TRI_ERROR_NO_ERROR) {
+      TRI_DocumentReplication((TRI_document_collection_t*) primary, type, marker);
+    }
+
   }
   else {
     trx->_hasOperations = true;
