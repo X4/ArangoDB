@@ -65,58 +65,122 @@ struct TRI_vocbase_col_s;
 /// @brief replicate a transaction
 ////////////////////////////////////////////////////////////////////////////////
 
+#ifdef TRI_ENABLE_REPLICATION
+
 int TRI_TransactionReplication (struct TRI_transaction_s const*);
+
+#else
+
+#define TRI_TransactionReplication(p1)
+
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief replicate a "create collection" operation
 ////////////////////////////////////////////////////////////////////////////////
 
+#ifdef TRI_ENABLE_REPLICATION
+
 int TRI_CreateCollectionReplication (TRI_voc_cid_t, 
                                      struct TRI_json_s const*);
+
+#else
+
+#define TRI_CreateCollectionReplication(p1, p2)
+
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief replicate a "drop collection" operation
 ////////////////////////////////////////////////////////////////////////////////
 
+#ifdef TRI_ENABLE_REPLICATION
+
 int TRI_DropCollectionReplication (TRI_voc_cid_t);
+
+#else
+
+#define TRI_DropCollectionReplication(p1)
+
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief replicate a "rename collection" operation
 ////////////////////////////////////////////////////////////////////////////////
 
+#ifdef TRI_ENABLE_REPLICATION
+
 int TRI_RenameCollectionReplication (TRI_voc_cid_t,
                                      char const*);
+
+#else
+
+#define TRI_RenameCollectionReplication(p1, p2)
+
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief replicate a "change collection properties" operation
 ////////////////////////////////////////////////////////////////////////////////
 
+#ifdef TRI_ENABLE_REPLICATION
+
 int TRI_ChangePropertiesCollectionReplication (TRI_voc_cid_t,
                                                struct TRI_json_s const*);
+
+#else
+
+#define TRI_ChangePropertiesCollectionReplication(p1, p2)
+
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief replicate a "create index" operation
 ////////////////////////////////////////////////////////////////////////////////
 
+#ifdef TRI_ENABLE_REPLICATION
+
 int TRI_CreateIndexReplication (TRI_voc_cid_t,
                                 TRI_idx_iid_t,
                                 struct TRI_json_s const*);
+
+#else
+
+#define TRI_CreateIndexReplication(p1, p2, p3)
+
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief replicate a "drop index" operation
 ////////////////////////////////////////////////////////////////////////////////
 
+#ifdef TRI_ENABLE_REPLICATION
+
 int TRI_DropIndexReplication (TRI_voc_cid_t,
                               TRI_idx_iid_t iid);
+
+#else
+
+#define TRI_DropIndexReplication(p1, p2)
+
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief replicate a document operation
 ////////////////////////////////////////////////////////////////////////////////
 
+#ifdef TRI_ENABLE_REPLICATION
+
 int TRI_DocumentReplication (struct TRI_document_collection_s*,
                              TRI_voc_document_operation_e,
                              struct TRI_df_marker_s const*,
                              struct TRI_doc_mptr_s const*);
+
+#else
+
+#define TRI_DocumentReplication(p1, p2, p3, p4)
+
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @}
