@@ -1786,7 +1786,7 @@ int TRI_AddOperationCollectionTransaction (TRI_transaction_collection_t* trxColl
     *written = true;
 
     if (res == TRI_ERROR_NO_ERROR) {
-      TRI_DocumentReplication((TRI_document_collection_t*) primary, type, marker);
+      TRI_DocumentReplication((TRI_document_collection_t*) primary, type, marker, oldData);
     }
 
   }

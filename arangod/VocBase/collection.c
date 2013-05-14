@@ -1304,12 +1304,11 @@ int TRI_SaveCollectionInfo (char const* path,
 int TRI_UpdateCollectionInfo (TRI_vocbase_t* vocbase,
                               TRI_collection_t* collection,
                               TRI_col_info_t const* parameter) {
-
   if (TRI_IS_DOCUMENT_COLLECTION(collection->_info._type)) {
     TRI_LOCK_JOURNAL_ENTRIES_DOC_COLLECTION((TRI_document_collection_t*) collection);
   }
 
-  if (parameter != 0) {
+  if (parameter != NULL) {
     collection->_info._maximalSize = parameter->_maximalSize;
     collection->_info._waitForSync = parameter->_waitForSync;
 
@@ -1336,7 +1335,7 @@ int TRI_UpdateCollectionInfo (TRI_vocbase_t* vocbase,
     }
     TRI_UNLOCK_JOURNAL_ENTRIES_DOC_COLLECTION((TRI_document_collection_t*) collection);
   }
-
+  
   return TRI_SaveCollectionInfo(collection->_directory, &collection->_info, vocbase->_forceSyncProperties);
 }
 
@@ -1347,7 +1346,8 @@ int TRI_UpdateCollectionInfo (TRI_vocbase_t* vocbase,
 /// function.
 ////////////////////////////////////////////////////////////////////////////////
 
-int TRI_RenameCollection (TRI_collection_t* collection, char const* name) {
+int TRI_RenameCollection (TRI_collection_t* collection, 
+                          char const* name) {
   TRI_col_info_t new;
   int res;
 

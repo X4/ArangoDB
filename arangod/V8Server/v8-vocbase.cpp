@@ -62,10 +62,11 @@
 #include "V8/v8-utils.h"
 #include "VocBase/auth.h"
 #include "VocBase/datafile.h"
-#include "VocBase/general-cursor.h"
 #include "VocBase/document-collection.h"
 #include "VocBase/edge-collection.h"
+#include "VocBase/general-cursor.h"
 #include "VocBase/key-generator.h"
+#include "VocBase/replication.h"
 #include "VocBase/voc-shaper.h"
 #include "v8.h"
 
@@ -4830,6 +4831,11 @@ static v8::Handle<v8::Value> JS_PropertiesVocbaseCol (v8::Arguments const& argv)
         ReleaseCollection(collection);
         TRI_V8_EXCEPTION(scope, res);
       }
+
+      
+      TRI_json_t* json = TRI_CreateJsonCollectionInfo(&base->_info);
+      TRI_ChangePropertiesCollectionReplication(base->_info._cid, json); 
+      TRI_FreeJson(TRI_CORE_MEM_ZONE, json);
     }
   }
 

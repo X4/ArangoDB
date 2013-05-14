@@ -28,21 +28,101 @@
 #include "replication.h"
 
 #include "BasicsC/conversions.h"
-#include "BasicsC/files.h"
-#include "BasicsC/hashes.h"
-#include "BasicsC/logging.h"
 #include "BasicsC/string-buffer.h"
 #include "BasicsC/tri-strings.h"
 
 #include "VocBase/collection.h"
 #include "VocBase/document-collection.h"
 
-#define LOG_REPLICATION(buffer) \
-  printf("REPLICATION: %s\n\n", buffer)
-
 // -----------------------------------------------------------------------------
 // --SECTION--                                                       REPLICATION
 // -----------------------------------------------------------------------------
+
+// -----------------------------------------------------------------------------
+// --SECTION--                                                   private defines
+// -----------------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////////////
+/// @addtogroup VocBase
+/// @{
+////////////////////////////////////////////////////////////////////////////////
+
+#define LOG_REPLICATION(buffer) \
+  printf("REPLICATION: %s\n\n", buffer)
+
+////////////////////////////////////////////////////////////////////////////////
+/// @brief shortcut function
+////////////////////////////////////////////////////////////////////////////////
+
+#define FAIL_IFNOT(func, buffer, val)                                     \
+  if (func(buffer, val) != TRI_ERROR_NO_ERROR) {                          \
+    return false;                                                         \
+  }
+
+////////////////////////////////////////////////////////////////////////////////
+/// @brief create a string-buffer function name
+////////////////////////////////////////////////////////////////////////////////
+
+#define APPEND_FUNC(name) TRI_ ## name ## StringBuffer
+
+////////////////////////////////////////////////////////////////////////////////
+/// @brief append a character to a string-buffer or fail
+////////////////////////////////////////////////////////////////////////////////
+
+#define APPEND_CHAR(buffer, c)      FAIL_IFNOT(APPEND_FUNC(AppendChar), buffer, c)
+
+////////////////////////////////////////////////////////////////////////////////
+/// @brief append a string to a string-buffer or fail
+////////////////////////////////////////////////////////////////////////////////
+
+#define APPEND_STRING(buffer, str)  FAIL_IFNOT(APPEND_FUNC(AppendString), buffer, str)
+
+////////////////////////////////////////////////////////////////////////////////
+/// @brief append uint64 to a string-buffer or fail
+////////////////////////////////////////////////////////////////////////////////
+
+#define APPEND_UINT64(buffer, val)  FAIL_IFNOT(APPEND_FUNC(AppendUInt64), buffer, val)
+
+////////////////////////////////////////////////////////////////////////////////
+/// @brief append json to a string-buffer or fail
+////////////////////////////////////////////////////////////////////////////////
+
+#define APPEND_JSON(buffer, json)   FAIL_IFNOT(TRI_StringifyJson, buffer, json)
+
+////////////////////////////////////////////////////////////////////////////////
+/// @brief collection operations
+////////////////////////////////////////////////////////////////////////////////
+
+#define OPERATION_COLLECTION_CREATE  "collection-create"
+#define OPERATION_COLLECTION_DROP    "collection-drop"
+#define OPERATION_COLLECTION_RENAME  "collection-rename"
+#define OPERATION_COLLECTION_CHANGE  "collection-change"
+
+////////////////////////////////////////////////////////////////////////////////
+/// @brief index operations
+////////////////////////////////////////////////////////////////////////////////
+
+#define OPERATION_INDEX_CREATE       "index-create"
+#define OPERATION_INDEX_DROP         "index-drop"
+
+////////////////////////////////////////////////////////////////////////////////
+/// @brief transaction control operations
+////////////////////////////////////////////////////////////////////////////////
+
+#define OPERATION_TRANSACTION_BEGIN  "transaction-begin"
+#define OPERATION_TRANSACTION_COMMIT "transaction-commit"
+
+////////////////////////////////////////////////////////////////////////////////
+/// @brief document operations
+////////////////////////////////////////////////////////////////////////////////
+
+#define OPERATION_DOCUMENT_INSERT    "document-insert"
+#define OPERATION_DOCUMENT_UPDATE    "document-update"
+#define OPERATION_DOCUMENT_REMOVE    "document-remove"
+
+////////////////////////////////////////////////////////////////////////////////
+/// @}
+////////////////////////////////////////////////////////////////////////////////
 
 // -----------------------------------------------------------------------------
 // --SECTION--                                                 private functions
@@ -60,12 +140,11 @@
 static bool StringifyBasics (TRI_string_buffer_t* buffer,
                              const TRI_voc_tick_t tick,
                              char const* operationType) {
-  
-  TRI_AppendStringStringBuffer(buffer, "{\"operation\":\"");
-  TRI_AppendStringStringBuffer(buffer, operationType);
-  TRI_AppendStringStringBuffer(buffer, "\",\"tick\":\"");
-  TRI_AppendUInt64StringBuffer(buffer, (uint64_t) tick); 
-  TRI_AppendStringStringBuffer(buffer, "\",");
+  APPEND_STRING(buffer, "{\"type\":\"");
+  APPEND_STRING(buffer, operationType);
+  APPEND_STRING(buffer, "\",\"tick\":\""); 
+  APPEND_UINT64(buffer, (uint64_t) tick);
+  APPEND_STRING(buffer, "\",");
 
   return true;
 }
@@ -76,9 +155,10 @@ static bool StringifyBasics (TRI_string_buffer_t* buffer,
 
 static bool StringifyIdTransaction (TRI_string_buffer_t* buffer,
                                     const TRI_voc_tid_t tid) {
-  TRI_AppendStringStringBuffer(buffer, "\"tid\":\"");
-  TRI_AppendUInt64StringBuffer(buffer, (uint64_t) tid); 
-  TRI_AppendStringStringBuffer(buffer, "\"");
+
+  APPEND_STRING(buffer, "\"tid\":\"");
+  APPEND_UINT64(buffer, (uint64_t) tid);
+  APPEND_CHAR(buffer, '"');
 
   return true;
 }
@@ -92,7 +172,8 @@ static bool StringifyCollectionsTransaction (TRI_string_buffer_t* buffer,
   size_t i, n;
   bool empty;
 
-  TRI_AppendStringStringBuffer(buffer, ",\"collections\":[");
+  APPEND_STRING(buffer, ",\"collections\":[");
+
   n = trx->_collections._length;
   empty = true;
 
@@ -107,18 +188,19 @@ static bool StringifyCollectionsTransaction (TRI_string_buffer_t* buffer,
     }
 
     if (empty) {
-      TRI_AppendCharStringBuffer(buffer, '"');
+      APPEND_CHAR(buffer, '"');
+
       empty = false;
     }
     else {
-      TRI_AppendStringStringBuffer(buffer, ",\"");
+      APPEND_STRING(buffer, ",\"");
     }
 
-    TRI_AppendUInt64StringBuffer(buffer, (uint64_t) trxCollection->_cid);
-    TRI_AppendCharStringBuffer(buffer, '"');
+    APPEND_UINT64(buffer, (uint64_t) trxCollection->_cid);
+    APPEND_CHAR(buffer, '"');
   }
   
-  TRI_AppendStringStringBuffer(buffer, "]");
+  APPEND_STRING(buffer, "]");
 
   return true;
 }
@@ -130,7 +212,7 @@ static bool StringifyCollectionsTransaction (TRI_string_buffer_t* buffer,
 static bool StringifyBeginTransaction (TRI_string_buffer_t* buffer,
                                        TRI_voc_tick_t tick,
                                        TRI_transaction_t const* trx) {
-  if (! StringifyBasics(buffer, tick, "begin-transaction")) {
+  if (! StringifyBasics(buffer, tick, OPERATION_TRANSACTION_BEGIN)) {
     return false;
   }
 
@@ -142,7 +224,7 @@ static bool StringifyBeginTransaction (TRI_string_buffer_t* buffer,
     return false;
   }
 
-  TRI_AppendCharStringBuffer(buffer, '}');
+  APPEND_CHAR(buffer, '}');
 
   return true;
 }
@@ -154,7 +236,7 @@ static bool StringifyBeginTransaction (TRI_string_buffer_t* buffer,
 static bool StringifyCommitTransaction (TRI_string_buffer_t* buffer,
                                         TRI_voc_tick_t tick,
                                         TRI_voc_tid_t tid) {
-  if (! StringifyBasics(buffer, tick, "commit-transaction")) {
+  if (! StringifyBasics(buffer, tick, OPERATION_TRANSACTION_COMMIT)) {
     return false;
   }
 
@@ -162,7 +244,7 @@ static bool StringifyCommitTransaction (TRI_string_buffer_t* buffer,
     return false;
   }
 
-  TRI_AppendCharStringBuffer(buffer, '}');
+  APPEND_CHAR(buffer, '}');
 
   return true;
 }
@@ -173,10 +255,9 @@ static bool StringifyCommitTransaction (TRI_string_buffer_t* buffer,
 
 static bool StringifyIndex (TRI_string_buffer_t* buffer,
                             const TRI_idx_iid_t iid) {
-
-  TRI_AppendStringStringBuffer(buffer, "\"index\":{\"id\":\"");
-  TRI_AppendUInt64StringBuffer(buffer, (uint64_t) iid);
-  TRI_AppendStringStringBuffer(buffer, "\"}");
+  APPEND_STRING(buffer, "\"index\":{\"id\":\"");
+  APPEND_UINT64(buffer, (uint64_t) iid);
+  APPEND_STRING(buffer, "\"}");
 
   return true;
 }
@@ -187,10 +268,9 @@ static bool StringifyIndex (TRI_string_buffer_t* buffer,
 
 static bool StringifyCollection (TRI_string_buffer_t* buffer,
                                  const TRI_voc_cid_t cid) {
-
-  TRI_AppendStringStringBuffer(buffer, "\"collection\":{\"cid\":\"");
-  TRI_AppendUInt64StringBuffer(buffer, (uint64_t) cid);
-  TRI_AppendStringStringBuffer(buffer, "\"}");
+  APPEND_STRING(buffer, "\"collection\":{\"cid\":\"");
+  APPEND_UINT64(buffer, (uint64_t) cid);
+  APPEND_STRING(buffer, "\"}");
 
   return true;
 }
@@ -201,16 +281,15 @@ static bool StringifyCollection (TRI_string_buffer_t* buffer,
 
 static bool StringifyCreateCollection (TRI_string_buffer_t* buffer,
                                        TRI_voc_tick_t tick,
+                                       char const* operationType,
                                        TRI_json_t const* json) {
-  if (! StringifyBasics(buffer, tick, "create-collection")) {
+  if (! StringifyBasics(buffer, tick, operationType)) {
     return false;
   }
 
-  TRI_AppendStringStringBuffer(buffer, "\"collection\":");
-
-  TRI_StringifyJson(buffer, json);
-
-  TRI_AppendCharStringBuffer(buffer, '}');
+  APPEND_STRING(buffer, "\"collection\":");
+  APPEND_JSON(buffer, json);
+  APPEND_CHAR(buffer, '}');
 
   return true;
 }
@@ -222,8 +301,7 @@ static bool StringifyCreateCollection (TRI_string_buffer_t* buffer,
 static bool StringifyDropCollection (TRI_string_buffer_t* buffer,
                                      TRI_voc_tick_t tick,
                                      TRI_voc_cid_t cid) {
-  
-  if (! StringifyBasics(buffer, tick, "drop-collection")) {
+  if (! StringifyBasics(buffer, tick, OPERATION_COLLECTION_DROP)) {
     return false;
   }
   
@@ -231,7 +309,7 @@ static bool StringifyDropCollection (TRI_string_buffer_t* buffer,
     return false;
   }
   
-  TRI_AppendCharStringBuffer(buffer, '}');
+  APPEND_CHAR(buffer, '}');
 
   return true;
 }
@@ -244,8 +322,7 @@ static bool StringifyRenameCollection (TRI_string_buffer_t* buffer,
                                        TRI_voc_tick_t tick,
                                        TRI_voc_cid_t cid,
                                        char const* name) {
-
-  if (! StringifyBasics(buffer, tick, "rename-collection")) {
+  if (! StringifyBasics(buffer, tick, OPERATION_COLLECTION_RENAME)) {
     return false;
   }
 
@@ -253,10 +330,10 @@ static bool StringifyRenameCollection (TRI_string_buffer_t* buffer,
     return false;
   }
 
-  TRI_AppendStringStringBuffer(buffer, ",\"name\":\"");
-  TRI_AppendStringStringBuffer(buffer, name);
-
-  TRI_AppendStringStringBuffer(buffer, "\"}");
+  APPEND_STRING(buffer, ",\"name\":\"");
+  // name is user-defined, but does not need escaping
+  APPEND_STRING(buffer, name);
+  APPEND_STRING(buffer, "\"}");
 
   return true;
 }
@@ -270,7 +347,7 @@ static bool StringifyCreateIndex (TRI_string_buffer_t* buffer,
                                   TRI_voc_cid_t cid,
                                   TRI_json_t const* json) {
 
-  if (! StringifyBasics(buffer, tick, "create-index")) {
+  if (! StringifyBasics(buffer, tick, OPERATION_INDEX_CREATE)) {
     return false;
   }
   
@@ -278,11 +355,9 @@ static bool StringifyCreateIndex (TRI_string_buffer_t* buffer,
     return false;
   }
 
-  TRI_AppendStringStringBuffer(buffer, ",\"index\":");
-
-  TRI_StringifyJson(buffer, json);
-
-  TRI_AppendCharStringBuffer(buffer, '}');
+  APPEND_STRING(buffer, ",\"index\":");
+  APPEND_JSON(buffer, json);
+  APPEND_CHAR(buffer, '}'); 
 
   return true;
 }
@@ -296,7 +371,7 @@ static bool StringifyDropIndex (TRI_string_buffer_t* buffer,
                                 TRI_voc_cid_t cid,
                                 TRI_idx_iid_t iid) {
   
-  if (! StringifyBasics(buffer, tick, "drop-index")) {
+  if (! StringifyBasics(buffer, tick, OPERATION_INDEX_DROP)) {
     return false;
   }
   
@@ -304,13 +379,13 @@ static bool StringifyDropIndex (TRI_string_buffer_t* buffer,
     return false;
   }
   
-  TRI_AppendCharStringBuffer(buffer, ',');
+  APPEND_CHAR(buffer, ','); 
 
   if (! StringifyIndex(buffer, iid)) {
     return false;
   }
   
-  TRI_AppendCharStringBuffer(buffer, '}');
+  APPEND_CHAR(buffer, '}'); 
 
   return true;
 }
@@ -323,18 +398,23 @@ static bool StringifyDocumentOperation (TRI_string_buffer_t* buffer,
                                         TRI_document_collection_t* document,
                                         TRI_voc_tid_t tid,
                                         TRI_voc_document_operation_e type,
-                                        TRI_df_marker_t const* marker) {
+                                        TRI_df_marker_t const* marker,
+                                        TRI_doc_mptr_t const* oldHeader) {
   char* typeString;
+  TRI_voc_rid_t oldRev;
   TRI_voc_key_t key;
   
   if (type == TRI_VOC_DOCUMENT_OPERATION_INSERT) {
-    typeString = "insert";
+    typeString = OPERATION_DOCUMENT_INSERT;
+    oldRev = 0;
   }
   else if (type == TRI_VOC_DOCUMENT_OPERATION_UPDATE) {
-    typeString = "update";
+    typeString = OPERATION_DOCUMENT_UPDATE;
+    oldRev = oldHeader->_rid;
   }
   else if (type == TRI_VOC_DOCUMENT_OPERATION_REMOVE) {
-    typeString = "remove";
+    typeString = OPERATION_DOCUMENT_REMOVE;
+    oldRev = oldHeader->_rid;
   }
   else {
     return false;
@@ -348,7 +428,7 @@ static bool StringifyDocumentOperation (TRI_string_buffer_t* buffer,
     return false;
   }
 
-  TRI_AppendCharStringBuffer(buffer, ',');
+  APPEND_CHAR(buffer, '}'); 
   
   if (! StringifyCollection(buffer, document->base.base._info._cid)) {
     return false;
@@ -370,8 +450,14 @@ static bool StringifyDocumentOperation (TRI_string_buffer_t* buffer,
     return false;
   }
 
-  TRI_AppendStringStringBuffer(buffer, ",\"key\":\"");
-  TRI_AppendStringStringBuffer(buffer, key);
+  APPEND_STRING(buffer, ",\"key\":\""); 
+  // key is user-defined, but does not need escaping
+  APPEND_STRING(buffer, key); 
+
+  if (oldRev > 0) {
+    APPEND_STRING(buffer, ",\"oldRev\":\""); 
+    APPEND_UINT64(buffer, (uint64_t) oldRev); 
+  }
 
   // document
   if (marker->_type == TRI_DOC_MARKER_KEY_DOCUMENT ||
@@ -379,43 +465,56 @@ static bool StringifyDocumentOperation (TRI_string_buffer_t* buffer,
     TRI_doc_document_key_marker_t const* m = (TRI_doc_document_key_marker_t const*) marker; 
     TRI_shaped_json_t shaped;
     
-    TRI_AppendStringStringBuffer(buffer, "\",\"doc\":{");
+    APPEND_STRING(buffer, "\",\"doc\":{");
     
     // common document meta-data
-    TRI_AppendStringStringBuffer(buffer, "\"_key\":\"");
-    TRI_AppendStringStringBuffer(buffer, key);
-    TRI_AppendStringStringBuffer(buffer, "\",\"_rev\":\"");
-    TRI_AppendUInt64StringBuffer(buffer, marker->_tick);
-    TRI_AppendStringStringBuffer(buffer, "\"");
+    APPEND_STRING(buffer, "\"_key\":\"");
+    APPEND_STRING(buffer, key);
+    APPEND_STRING(buffer, "\",\"_rev\":\"");
+    APPEND_UINT64(buffer, marker->_tick);
+    APPEND_CHAR(buffer, '"');
 
     if (marker->_type == TRI_DOC_MARKER_KEY_EDGE) {
       TRI_doc_edge_key_marker_t const* e = (TRI_doc_edge_key_marker_t const*) marker;
       TRI_voc_key_t fromKey = ((char*) e) + e->_offsetFromKey;
       TRI_voc_key_t toKey = ((char*) e) + e->_offsetToKey;
 
-      TRI_AppendStringStringBuffer(buffer, ",\"_from\":\"");
-      TRI_AppendUInt64StringBuffer(buffer, e->_fromCid);
-      TRI_AppendStringStringBuffer(buffer, "/");
-      TRI_AppendStringStringBuffer(buffer, fromKey);
-      TRI_AppendStringStringBuffer(buffer, "\",\"_to\":\"");
-      TRI_AppendUInt64StringBuffer(buffer, e->_toCid);
-      TRI_AppendStringStringBuffer(buffer, "/");
-      TRI_AppendStringStringBuffer(buffer, toKey);
-      TRI_AppendStringStringBuffer(buffer, "\"");
+      APPEND_STRING(buffer, ",\"_from\":\"");
+      APPEND_UINT64(buffer, e->_fromCid);
+      APPEND_CHAR(buffer, '/');
+      APPEND_STRING(buffer, fromKey);
+      APPEND_STRING(buffer, "\",\"_to\":\"");
+      APPEND_UINT64(buffer, e->_toCid);
+      APPEND_CHAR(buffer, '/');
+      APPEND_STRING(buffer, toKey);
+      APPEND_CHAR(buffer, '"');
     }
 
     // the actual document data
     TRI_EXTRACT_SHAPED_JSON_MARKER(shaped, m);
     TRI_StringifyArrayShapedJson(document->base._shaper, buffer, &shaped, true);
 
-    TRI_AppendStringStringBuffer(buffer, "}}");
+    APPEND_STRING(buffer, "}}");
   }
   else {
-    TRI_AppendStringStringBuffer(buffer, "\"}");
+    APPEND_STRING(buffer, "\"}");
   }
   
   return true;
 }
+
+////////////////////////////////////////////////////////////////////////////////
+/// @}
+////////////////////////////////////////////////////////////////////////////////
+
+// -----------------------------------------------------------------------------
+// --SECTION--                                                  public functions
+// -----------------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////////////
+/// @addtogroup VocBase
+/// @{
+////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief replicate a transaction
@@ -459,7 +558,7 @@ int TRI_TransactionReplication (TRI_transaction_t const* trx) {
 
       trxOperation = TRI_AtVector(trxCollection->_operations, j);
   
-      if (StringifyDocumentOperation(buffer, document, trx->_id, trxOperation->_type, trxOperation->_marker)) {
+      if (StringifyDocumentOperation(buffer, document, trx->_id, trxOperation->_type, trxOperation->_marker, trxOperation->_oldHeader)) {
         LOG_REPLICATION(buffer->_buffer);
       }
 
@@ -485,7 +584,7 @@ int TRI_CreateCollectionReplication (TRI_voc_cid_t cid,
   
   buffer = TRI_CreateStringBuffer(TRI_CORE_MEM_ZONE);
 
-  if (StringifyCreateCollection(buffer, TRI_NewTickVocBase(), json)) {
+  if (StringifyCreateCollection(buffer, TRI_NewTickVocBase(), OPERATION_COLLECTION_CREATE, json)) {
     LOG_REPLICATION(buffer->_buffer);
   }
 
@@ -521,6 +620,24 @@ int TRI_RenameCollectionReplication (TRI_voc_cid_t cid,
   buffer = TRI_CreateStringBuffer(TRI_CORE_MEM_ZONE);
 
   if (StringifyRenameCollection(buffer, TRI_NewTickVocBase(), cid, name)) {
+    LOG_REPLICATION(buffer->_buffer);
+  }
+
+  TRI_FreeStringBuffer(TRI_CORE_MEM_ZONE, buffer);
+  return TRI_ERROR_NO_ERROR;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// @brief replicate a "change collection properties" operation
+////////////////////////////////////////////////////////////////////////////////
+
+int TRI_ChangePropertiesCollectionReplication (TRI_voc_cid_t cid,
+                                               TRI_json_t const* json) {
+  TRI_string_buffer_t* buffer;
+  
+  buffer = TRI_CreateStringBuffer(TRI_CORE_MEM_ZONE);
+
+  if (StringifyCreateCollection(buffer, TRI_NewTickVocBase(), OPERATION_COLLECTION_CHANGE, json)) {
     LOG_REPLICATION(buffer->_buffer);
   }
 
@@ -571,12 +688,13 @@ int TRI_DropIndexReplication (TRI_voc_cid_t cid,
 
 int TRI_DocumentReplication (TRI_document_collection_t* document,
                              TRI_voc_document_operation_e type,
-                             TRI_df_marker_t const* marker) {
+                             TRI_df_marker_t const* marker,
+                             TRI_doc_mptr_t const* oldHeader) {
   TRI_string_buffer_t* buffer;
   
   buffer = TRI_CreateStringBuffer(TRI_CORE_MEM_ZONE);
 
-  if (StringifyDocumentOperation(buffer, document, 0, type, marker)) {
+  if (StringifyDocumentOperation(buffer, document, 0, type, marker, oldHeader)) {
     LOG_REPLICATION(buffer->_buffer);
   }
 

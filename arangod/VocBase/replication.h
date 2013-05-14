@@ -40,10 +40,10 @@ extern "C" {
 // --SECTION--                                              forward declarations
 // -----------------------------------------------------------------------------
 
-
 struct TRI_col_info_s;
 struct TRI_df_marker_s;
 struct TRI_document_collection_s;
+struct TRI_doc_mptr_s;
 struct TRI_json_s;
 struct TRI_transaction_s;
 struct TRI_vocbase_col_s;
@@ -88,6 +88,13 @@ int TRI_RenameCollectionReplication (TRI_voc_cid_t,
                                      char const*);
 
 ////////////////////////////////////////////////////////////////////////////////
+/// @brief replicate a "change collection properties" operation
+////////////////////////////////////////////////////////////////////////////////
+
+int TRI_ChangePropertiesCollectionReplication (TRI_voc_cid_t,
+                                               struct TRI_json_s const*);
+
+////////////////////////////////////////////////////////////////////////////////
 /// @brief replicate a "create index" operation
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -108,7 +115,8 @@ int TRI_DropIndexReplication (TRI_voc_cid_t,
 
 int TRI_DocumentReplication (struct TRI_document_collection_s*,
                              TRI_voc_document_operation_e,
-                             struct TRI_df_marker_s const*);
+                             struct TRI_df_marker_s const*,
+                             struct TRI_doc_mptr_s const*);
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @}
