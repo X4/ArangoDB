@@ -45,6 +45,7 @@
 #include "ShapedJson/shaped-json.h"
 #include "VocBase/document-collection.h"
 #include "VocBase/edge-collection.h"
+#include "VocBase/replication.h"
 #include "VocBase/voc-shaper.h"
 
 // -----------------------------------------------------------------------------
@@ -210,7 +211,8 @@ bool TRI_RemoveIndexFile (TRI_primary_collection_t* collection, TRI_index_t* idx
 /// @brief saves an index
 ////////////////////////////////////////////////////////////////////////////////
 
-int TRI_SaveIndex (TRI_primary_collection_t* collection, TRI_index_t* idx) {
+int TRI_SaveIndex (TRI_primary_collection_t* collection, 
+                   TRI_index_t* idx) {
   TRI_json_t* json;
   char* filename;
   char* name;
@@ -221,7 +223,7 @@ int TRI_SaveIndex (TRI_primary_collection_t* collection, TRI_index_t* idx) {
   json = idx->json(idx, collection);
 
   if (json == NULL) {
-    LOG_TRACE("cannot save index definition: index cannot be jsonfied");
+    LOG_TRACE("cannot save index definition: index cannot be jsonified");
     return TRI_set_errno(TRI_ERROR_INTERNAL);
   }
 
@@ -237,12 +239,16 @@ int TRI_SaveIndex (TRI_primary_collection_t* collection, TRI_index_t* idx) {
   ok = TRI_SaveJson(filename, json, collection->base._vocbase->_forceSyncProperties);
 
   TRI_FreeString(TRI_CORE_MEM_ZONE, filename);
-  TRI_FreeJson(TRI_CORE_MEM_ZONE, json);
 
   if (! ok) {
     LOG_ERROR("cannot save index definition: %s", TRI_last_error());
+    TRI_FreeJson(TRI_CORE_MEM_ZONE, json);
     return TRI_errno();
   }
+
+  TRI_CreateIndexReplication(collection->base._info._cid, idx->_iid, json);
+
+  TRI_FreeJson(TRI_CORE_MEM_ZONE, json);
 
   return TRI_ERROR_NO_ERROR;
 }
@@ -2140,6 +2146,7 @@ TRI_index_t* TRI_CreateFulltextIndex (struct TRI_primary_collection_s* primary,
   fulltextIndex = TRI_Allocate(TRI_CORE_MEM_ZONE, sizeof(TRI_fulltext_index_t), false);
 
   fts = TRI_CreateFtsIndex(2048, 1, 1);
+
   if (fts == NULL) {
     TRI_Free(TRI_CORE_MEM_ZONE, fulltextIndex);
     return NULL;

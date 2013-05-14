@@ -937,7 +937,7 @@ namespace triagens {
           TRI_ASSERT_MAINTAINER(_nestingLevel == 0);
 
           // we are not embedded. now start our own transaction 
-          _trx = TRI_CreateTransaction(_vocbase->_transactionContext, _timeout, _waitForSync);
+          _trx = TRI_CreateTransaction(_vocbase->_transactionContext, true, _timeout, _waitForSync);
 
           if (_trx == 0) {
             return TRI_ERROR_OUT_OF_MEMORY;

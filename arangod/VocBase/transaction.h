@@ -326,7 +326,8 @@ typedef struct TRI_transaction_s {
   TRI_transaction_hint_t     _hints;          // hints;
   int                        _nestingLevel;
   uint64_t                   _timeout;        // timeout for lock acquisition
-  bool                       _hasOperations; 
+  bool                       _hasOperations;  // whether or not there are write operations in the trx
+  bool                       _replicate;      // replicate this transaction?
   bool                       _waitForSync;    // whether or not the collection had a synchronous op
 }
 TRI_transaction_t;
@@ -369,6 +370,7 @@ TRI_transaction_collection_t;
 ////////////////////////////////////////////////////////////////////////////////
 
 TRI_transaction_t* TRI_CreateTransaction (TRI_transaction_context_t* const, 
+                                          bool,
                                           double, 
                                           bool);
 
@@ -517,7 +519,8 @@ int TRI_ExecuteSingleOperationTransaction (struct TRI_vocbase_s*,
                                            const char*,
                                            TRI_transaction_type_e,
                                            int (*callback)(TRI_transaction_collection_t*, void*),
-                                           void*);
+                                           void*,
+                                           bool);
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @}

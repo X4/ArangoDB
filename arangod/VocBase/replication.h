@@ -30,6 +30,7 @@
 
 #include "VocBase/document-collection.h"
 #include "VocBase/vocbase.h"
+#include "VocBase/voc-types.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -43,7 +44,8 @@ extern "C" {
 struct TRI_col_info_s;
 struct TRI_df_marker_s;
 struct TRI_document_collection_s;
-struct TRI_string_buffer_s;
+struct TRI_json_s;
+struct TRI_transaction_s;
 struct TRI_vocbase_col_s;
 
 // -----------------------------------------------------------------------------
@@ -60,49 +62,53 @@ struct TRI_vocbase_col_s;
 ////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////
-/// @brief replicate a "begin transaction" operation
+/// @brief replicate a transaction
 ////////////////////////////////////////////////////////////////////////////////
 
-struct TRI_string_buffer_s* TRI_BeginTransactionReplication (TRI_voc_tid_t);
-
-////////////////////////////////////////////////////////////////////////////////
-/// @brief replicate a "abort transaction" operation
-////////////////////////////////////////////////////////////////////////////////
-
-struct TRI_string_buffer_s* TRI_AbortTransactionReplication (TRI_voc_tid_t);
-
-////////////////////////////////////////////////////////////////////////////////
-/// @brief replicate a "commit transaction" operation
-////////////////////////////////////////////////////////////////////////////////
-
-struct TRI_string_buffer_s* TRI_CommitTransactionReplication (TRI_voc_tid_t);
+int TRI_TransactionReplication (struct TRI_transaction_s const*);
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief replicate a "create collection" operation
 ////////////////////////////////////////////////////////////////////////////////
 
-struct TRI_string_buffer_s* TRI_CreateCollectionReplication (struct TRI_col_info_s const*);
+int TRI_CreateCollectionReplication (TRI_voc_cid_t, 
+                                     struct TRI_json_s const*);
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief replicate a "drop collection" operation
 ////////////////////////////////////////////////////////////////////////////////
 
-struct TRI_string_buffer_s* TRI_DropCollectionReplication (TRI_voc_cid_t);
+int TRI_DropCollectionReplication (TRI_voc_cid_t);
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief replicate a "rename collection" operation
 ////////////////////////////////////////////////////////////////////////////////
 
-struct TRI_string_buffer_s* TRI_RenameCollectionReplication (TRI_voc_cid_t,
-                                                             char const*);
+int TRI_RenameCollectionReplication (TRI_voc_cid_t,
+                                     char const*);
+
+////////////////////////////////////////////////////////////////////////////////
+/// @brief replicate a "create index" operation
+////////////////////////////////////////////////////////////////////////////////
+
+int TRI_CreateIndexReplication (TRI_voc_cid_t,
+                                TRI_idx_iid_t,
+                                struct TRI_json_s const*);
+
+////////////////////////////////////////////////////////////////////////////////
+/// @brief replicate a "drop index" operation
+////////////////////////////////////////////////////////////////////////////////
+
+int TRI_DropIndexReplication (TRI_voc_cid_t,
+                              TRI_idx_iid_t iid);
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief replicate a document operation
 ////////////////////////////////////////////////////////////////////////////////
 
-struct TRI_string_buffer_s* TRI_DocumentReplication (struct TRI_document_collection_s*,
-                                                     TRI_voc_document_operation_e,
-                                                     struct TRI_df_marker_s const*);
+int TRI_DocumentReplication (struct TRI_document_collection_s*,
+                             TRI_voc_document_operation_e,
+                             struct TRI_df_marker_s const*);
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @}

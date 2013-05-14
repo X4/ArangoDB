@@ -1644,6 +1644,7 @@ TRI_vocbase_col_t* TRI_CreateCollectionVocBase (TRI_vocbase_t* vocbase,
   TRI_collection_t* col;
   TRI_primary_collection_t* primary = NULL;
   TRI_document_collection_t* document;
+  TRI_json_t* json;
   TRI_col_type_e type;
   char const* name;
   void const* found;
@@ -1723,10 +1724,12 @@ TRI_vocbase_col_t* TRI_CreateCollectionVocBase (TRI_vocbase_t* vocbase,
   collection->_collection = primary;
   TRI_CopyString(collection->_path, primary->base._directory, sizeof(collection->_path));
 
+  json = TRI_CreateJsonCollectionInfo(&col->_info);
+
   TRI_WRITE_UNLOCK_COLLECTIONS_VOCBASE(vocbase);
 
-  // TODO: protect this against unloading
-  TRI_CreateCollectionReplication(&col->_info);
+  TRI_CreateCollectionReplication(cid, json);
+  TRI_FreeJson(TRI_CORE_MEM_ZONE, json);
 
   return collection;
 }

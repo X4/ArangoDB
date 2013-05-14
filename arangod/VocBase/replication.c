@@ -37,6 +37,9 @@
 #include "VocBase/collection.h"
 #include "VocBase/document-collection.h"
 
+#define LOG_REPLICATION(buffer) \
+  printf("REPLICATION: %s\n\n", buffer)
+
 // -----------------------------------------------------------------------------
 // --SECTION--                                                       REPLICATION
 // -----------------------------------------------------------------------------
@@ -68,14 +71,54 @@ static bool StringifyBasics (TRI_string_buffer_t* buffer,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/// @brief stringify the basics of a transaction
+/// @brief stringify the id of a transaction
 ////////////////////////////////////////////////////////////////////////////////
 
-static bool StringifyTransaction (TRI_string_buffer_t* buffer,
-                                  const TRI_voc_tid_t tid) {
+static bool StringifyIdTransaction (TRI_string_buffer_t* buffer,
+                                    const TRI_voc_tid_t tid) {
   TRI_AppendStringStringBuffer(buffer, "\"tid\":\"");
   TRI_AppendUInt64StringBuffer(buffer, (uint64_t) tid); 
   TRI_AppendStringStringBuffer(buffer, "\"");
+
+  return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// @brief stringify the collections of a transaction
+////////////////////////////////////////////////////////////////////////////////
+
+static bool StringifyCollectionsTransaction (TRI_string_buffer_t* buffer,
+                                             TRI_transaction_t const* trx) {
+  size_t i, n;
+  bool empty;
+
+  TRI_AppendStringStringBuffer(buffer, ",\"collections\":[");
+  n = trx->_collections._length;
+  empty = true;
+
+  for (i = 0; i < n; ++i) {
+    TRI_transaction_collection_t* trxCollection;
+
+    trxCollection = TRI_AtVectorPointer(&trx->_collections, i);
+
+    if (trxCollection->_operations == NULL) {
+      // no markers available for collection
+      continue;
+    }
+
+    if (empty) {
+      TRI_AppendCharStringBuffer(buffer, '"');
+      empty = false;
+    }
+    else {
+      TRI_AppendStringStringBuffer(buffer, ",\"");
+    }
+
+    TRI_AppendUInt64StringBuffer(buffer, (uint64_t) trxCollection->_cid);
+    TRI_AppendCharStringBuffer(buffer, '"');
+  }
+  
+  TRI_AppendStringStringBuffer(buffer, "]");
 
   return true;
 }
@@ -86,32 +129,16 @@ static bool StringifyTransaction (TRI_string_buffer_t* buffer,
 
 static bool StringifyBeginTransaction (TRI_string_buffer_t* buffer,
                                        TRI_voc_tick_t tick,
-                                       TRI_voc_tid_t tid) {
-  if (! StringifyBasics(buffer, tick, "begin")) {
+                                       TRI_transaction_t const* trx) {
+  if (! StringifyBasics(buffer, tick, "begin-transaction")) {
     return false;
   }
 
-  if (! StringifyTransaction(buffer, tid)) {
+  if (! StringifyIdTransaction(buffer, trx->_id)) {
     return false;
   }
 
-  TRI_AppendCharStringBuffer(buffer, '}');
-
-  return true;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-/// @brief stringify an "abort transaction" operation
-////////////////////////////////////////////////////////////////////////////////
-
-static bool StringifyAbortTransaction (TRI_string_buffer_t* buffer,
-                                       TRI_voc_tick_t tick,
-                                       TRI_voc_tid_t tid) {
-  if (! StringifyBasics(buffer, tick, "abort")) {
-    return false;
-  }
-
-  if (! StringifyTransaction(buffer, tid)) {
+  if (! StringifyCollectionsTransaction(buffer, trx)) {
     return false;
   }
 
@@ -127,15 +154,29 @@ static bool StringifyAbortTransaction (TRI_string_buffer_t* buffer,
 static bool StringifyCommitTransaction (TRI_string_buffer_t* buffer,
                                         TRI_voc_tick_t tick,
                                         TRI_voc_tid_t tid) {
-  if (! StringifyBasics(buffer, tick, "commit")) {
+  if (! StringifyBasics(buffer, tick, "commit-transaction")) {
     return false;
   }
 
-  if (! StringifyTransaction(buffer, tid)) {
+  if (! StringifyIdTransaction(buffer, tid)) {
     return false;
   }
 
   TRI_AppendCharStringBuffer(buffer, '}');
+
+  return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// @brief stringify an index context
+////////////////////////////////////////////////////////////////////////////////
+
+static bool StringifyIndex (TRI_string_buffer_t* buffer,
+                            const TRI_idx_iid_t iid) {
+
+  TRI_AppendStringStringBuffer(buffer, "\"index\":{\"id\":\"");
+  TRI_AppendUInt64StringBuffer(buffer, (uint64_t) iid);
+  TRI_AppendStringStringBuffer(buffer, "\"}");
 
   return true;
 }
@@ -160,19 +201,14 @@ static bool StringifyCollection (TRI_string_buffer_t* buffer,
 
 static bool StringifyCreateCollection (TRI_string_buffer_t* buffer,
                                        TRI_voc_tick_t tick,
-                                       TRI_col_info_t const* info) {
-  TRI_json_t* json;
-
-  if (! StringifyBasics(buffer, tick, "create")) {
+                                       TRI_json_t const* json) {
+  if (! StringifyBasics(buffer, tick, "create-collection")) {
     return false;
   }
 
   TRI_AppendStringStringBuffer(buffer, "\"collection\":");
 
-  json = TRI_CreateJsonCollectionInfo(info);
   TRI_StringifyJson(buffer, json);
-
-  TRI_FreeJson(TRI_CORE_MEM_ZONE, json);
 
   TRI_AppendCharStringBuffer(buffer, '}');
 
@@ -187,7 +223,7 @@ static bool StringifyDropCollection (TRI_string_buffer_t* buffer,
                                      TRI_voc_tick_t tick,
                                      TRI_voc_cid_t cid) {
   
-  if (! StringifyBasics(buffer, tick, "drop")) {
+  if (! StringifyBasics(buffer, tick, "drop-collection")) {
     return false;
   }
   
@@ -209,7 +245,7 @@ static bool StringifyRenameCollection (TRI_string_buffer_t* buffer,
                                        TRI_voc_cid_t cid,
                                        char const* name) {
 
-  if (! StringifyBasics(buffer, tick, "rename")) {
+  if (! StringifyBasics(buffer, tick, "rename-collection")) {
     return false;
   }
 
@@ -226,11 +262,66 @@ static bool StringifyRenameCollection (TRI_string_buffer_t* buffer,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+/// @brief stringify a "create index" operation
+////////////////////////////////////////////////////////////////////////////////
+
+static bool StringifyCreateIndex (TRI_string_buffer_t* buffer,
+                                  TRI_voc_tick_t tick,
+                                  TRI_voc_cid_t cid,
+                                  TRI_json_t const* json) {
+
+  if (! StringifyBasics(buffer, tick, "create-index")) {
+    return false;
+  }
+  
+  if (! StringifyCollection(buffer, cid)) {
+    return false;
+  }
+
+  TRI_AppendStringStringBuffer(buffer, ",\"index\":");
+
+  TRI_StringifyJson(buffer, json);
+
+  TRI_AppendCharStringBuffer(buffer, '}');
+
+  return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// @brief stringify a "drop index" operation
+////////////////////////////////////////////////////////////////////////////////
+
+static bool StringifyDropIndex (TRI_string_buffer_t* buffer,
+                                TRI_voc_tick_t tick,
+                                TRI_voc_cid_t cid,
+                                TRI_idx_iid_t iid) {
+  
+  if (! StringifyBasics(buffer, tick, "drop-index")) {
+    return false;
+  }
+  
+  if (! StringifyCollection(buffer, cid)) {
+    return false;
+  }
+  
+  TRI_AppendCharStringBuffer(buffer, ',');
+
+  if (! StringifyIndex(buffer, iid)) {
+    return false;
+  }
+  
+  TRI_AppendCharStringBuffer(buffer, '}');
+
+  return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 /// @brief stringify a document operation
 ////////////////////////////////////////////////////////////////////////////////
 
 static bool StringifyDocumentOperation (TRI_string_buffer_t* buffer,
                                         TRI_document_collection_t* document,
+                                        TRI_voc_tid_t tid,
                                         TRI_voc_document_operation_e type,
                                         TRI_df_marker_t const* marker) {
   char* typeString;
@@ -252,6 +343,12 @@ static bool StringifyDocumentOperation (TRI_string_buffer_t* buffer,
   if (! StringifyBasics(buffer, marker->_tick, typeString)) {
     return false;
   }
+  
+  if (! StringifyIdTransaction(buffer, tid)) {
+    return false;
+  }
+
+  TRI_AppendCharStringBuffer(buffer, ',');
   
   if (! StringifyCollection(buffer, document->base.base._info._cid)) {
     return false;
@@ -321,125 +418,170 @@ static bool StringifyDocumentOperation (TRI_string_buffer_t* buffer,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/// @brief replicate a "begin transaction" operation
+/// @brief replicate a transaction
 ////////////////////////////////////////////////////////////////////////////////
 
-TRI_string_buffer_t* TRI_BeginTransactionReplication (TRI_voc_tid_t tid) {
+int TRI_TransactionReplication (TRI_transaction_t const* trx) {
   TRI_string_buffer_t* buffer;
+  size_t i, n;
+
+  if (! trx->_replicate) {
+    return TRI_ERROR_NO_ERROR;
+  }
   
   buffer = TRI_CreateStringBuffer(TRI_CORE_MEM_ZONE);
 
-  if (StringifyBeginTransaction(buffer, TRI_NewTickVocBase(), tid)) {
-    printf("REPLICATION: %s\n\n", buffer->_buffer);
+  if (StringifyBeginTransaction(buffer, TRI_NewTickVocBase(), trx)) {
+    LOG_REPLICATION(buffer->_buffer);
   }
+  TRI_ClearStringBuffer(buffer);
 
-  TRI_FreeStringBuffer(TRI_CORE_MEM_ZONE, buffer);
-  return NULL;
-}
+  n = trx->_collections._length;
 
-////////////////////////////////////////////////////////////////////////////////
-/// @brief replicate an "abort transaction" operation
-////////////////////////////////////////////////////////////////////////////////
+  for (i = 0; i < n; ++i) {
+    TRI_transaction_collection_t* trxCollection;
+    TRI_document_collection_t* document;
+    size_t j, k;
 
-TRI_string_buffer_t* TRI_AbortTransactionReplication (TRI_voc_tid_t tid) {
-  TRI_string_buffer_t* buffer;
+    trxCollection = TRI_AtVectorPointer(&trx->_collections, i);
+
+    if (trxCollection->_operations == NULL) {
+      // no markers available for collection
+      continue;
+    }
+    
+    document = (TRI_document_collection_t*) trxCollection->_collection->_collection;
+
+    // write the individual operations
+    k = trxCollection->_operations->_length;
+    for (j = 0; j < k; ++j) {
+      TRI_transaction_operation_t* trxOperation;
+
+      trxOperation = TRI_AtVector(trxCollection->_operations, j);
   
-  buffer = TRI_CreateStringBuffer(TRI_CORE_MEM_ZONE);
+      if (StringifyDocumentOperation(buffer, document, trx->_id, trxOperation->_type, trxOperation->_marker)) {
+        LOG_REPLICATION(buffer->_buffer);
+      }
 
-  if (StringifyAbortTransaction(buffer, TRI_NewTickVocBase(), tid)) {
-    printf("REPLICATION: %s\n\n", buffer->_buffer);
+      TRI_ClearStringBuffer(buffer);
+    }
   }
-
-  TRI_FreeStringBuffer(TRI_CORE_MEM_ZONE, buffer);
-  return NULL;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-/// @brief replicate a "commit transaction" operation
-////////////////////////////////////////////////////////////////////////////////
-
-TRI_string_buffer_t* TRI_CommitTransactionReplication (TRI_voc_tid_t tid) {
-  TRI_string_buffer_t* buffer;
   
-  buffer = TRI_CreateStringBuffer(TRI_CORE_MEM_ZONE);
-
-  if (StringifyCommitTransaction(buffer, TRI_NewTickVocBase(), tid)) {
-    printf("REPLICATION: %s\n\n", buffer->_buffer);
+  if (StringifyCommitTransaction(buffer, TRI_NewTickVocBase(), trx->_id)) {
+    LOG_REPLICATION(buffer->_buffer);
   }
 
   TRI_FreeStringBuffer(TRI_CORE_MEM_ZONE, buffer);
-  return NULL;
+  return TRI_ERROR_NO_ERROR;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief replicate a "create collection" operation
 ////////////////////////////////////////////////////////////////////////////////
 
-TRI_string_buffer_t* TRI_CreateCollectionReplication (TRI_col_info_t const* info) {
+int TRI_CreateCollectionReplication (TRI_voc_cid_t cid,
+                                     TRI_json_t const* json) {
   TRI_string_buffer_t* buffer;
   
   buffer = TRI_CreateStringBuffer(TRI_CORE_MEM_ZONE);
 
-  if (StringifyCreateCollection(buffer, TRI_NewTickVocBase(), info)) {
-    printf("REPLICATION: %s\n\n", buffer->_buffer);
+  if (StringifyCreateCollection(buffer, TRI_NewTickVocBase(), json)) {
+    LOG_REPLICATION(buffer->_buffer);
   }
 
   TRI_FreeStringBuffer(TRI_CORE_MEM_ZONE, buffer);
-  return NULL;
+  return TRI_ERROR_NO_ERROR;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief replicate a "drop collection" operation
 ////////////////////////////////////////////////////////////////////////////////
 
-TRI_string_buffer_t* TRI_DropCollectionReplication (TRI_voc_cid_t cid) {
+int TRI_DropCollectionReplication (TRI_voc_cid_t cid) {
   TRI_string_buffer_t* buffer;
   
   buffer = TRI_CreateStringBuffer(TRI_CORE_MEM_ZONE);
 
   if (StringifyDropCollection(buffer, TRI_NewTickVocBase(), cid)) {
-    printf("REPLICATION: %s\n\n", buffer->_buffer);
+    LOG_REPLICATION(buffer->_buffer);
   }
 
   TRI_FreeStringBuffer(TRI_CORE_MEM_ZONE, buffer);
-  return NULL;
+  return TRI_ERROR_NO_ERROR;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief replicate a "rename collection" operation
 ////////////////////////////////////////////////////////////////////////////////
 
-TRI_string_buffer_t* TRI_RenameCollectionReplication (TRI_voc_cid_t cid,
-                                                      char const* name) {
+int TRI_RenameCollectionReplication (TRI_voc_cid_t cid,
+                                     char const* name) {
   TRI_string_buffer_t* buffer;
   
   buffer = TRI_CreateStringBuffer(TRI_CORE_MEM_ZONE);
 
   if (StringifyRenameCollection(buffer, TRI_NewTickVocBase(), cid, name)) {
-    printf("REPLICATION: %s\n\n", buffer->_buffer);
+    LOG_REPLICATION(buffer->_buffer);
   }
 
   TRI_FreeStringBuffer(TRI_CORE_MEM_ZONE, buffer);
-  return NULL;
+  return TRI_ERROR_NO_ERROR;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// @brief replicate a "create index" operation
+////////////////////////////////////////////////////////////////////////////////
+
+int TRI_CreateIndexReplication (TRI_voc_cid_t cid,
+                                TRI_idx_iid_t iid,
+                                TRI_json_t const* json) {
+  TRI_string_buffer_t* buffer;
+  
+  buffer = TRI_CreateStringBuffer(TRI_CORE_MEM_ZONE);
+
+  if (StringifyCreateIndex(buffer, TRI_NewTickVocBase(), cid, json)) {
+    LOG_REPLICATION(buffer->_buffer);
+  }
+
+  TRI_FreeStringBuffer(TRI_CORE_MEM_ZONE, buffer);
+  return TRI_ERROR_NO_ERROR;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// @brief replicate a "drop index" operation
+////////////////////////////////////////////////////////////////////////////////
+
+int TRI_DropIndexReplication (TRI_voc_cid_t cid,
+                              TRI_idx_iid_t iid) {
+  TRI_string_buffer_t* buffer;
+  
+  buffer = TRI_CreateStringBuffer(TRI_CORE_MEM_ZONE);
+
+  if (StringifyDropIndex(buffer, TRI_NewTickVocBase(), cid, iid)) {
+    LOG_REPLICATION(buffer->_buffer);
+  }
+
+  TRI_FreeStringBuffer(TRI_CORE_MEM_ZONE, buffer);
+  return TRI_ERROR_NO_ERROR;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief replicate a document operation
 ////////////////////////////////////////////////////////////////////////////////
 
-TRI_string_buffer_t* TRI_DocumentReplication (TRI_document_collection_t* document,
-                                              TRI_voc_document_operation_e type,
-                                              TRI_df_marker_t const* marker) {
+int TRI_DocumentReplication (TRI_document_collection_t* document,
+                             TRI_voc_document_operation_e type,
+                             TRI_df_marker_t const* marker) {
   TRI_string_buffer_t* buffer;
   
   buffer = TRI_CreateStringBuffer(TRI_CORE_MEM_ZONE);
 
-  if (StringifyDocumentOperation(buffer, document, type, marker)) {
-    printf("REPLICATION: %s\n\n", buffer->_buffer);
+  if (StringifyDocumentOperation(buffer, document, 0, type, marker)) {
+    LOG_REPLICATION(buffer->_buffer);
   }
 
   TRI_FreeStringBuffer(TRI_CORE_MEM_ZONE, buffer);
-  return NULL;
+  return TRI_ERROR_NO_ERROR;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

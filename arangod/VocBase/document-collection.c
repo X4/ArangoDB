@@ -41,6 +41,7 @@
 #include "VocBase/index.h"
 #include "VocBase/key-generator.h"
 #include "VocBase/marker.h"
+#include "VocBase/replication.h"
 #include "VocBase/update-policy.h"
 #include "VocBase/voc-shaper.h"
 
@@ -2215,7 +2216,8 @@ static int OpenIteratorAbortTransaction (open_iterator_state_t* state) {
                                                   TRI_TRANSACTION_COORDINATOR_COLLECTION, 
                                                   TRI_TRANSACTION_READ, 
                                                   ReadTrxCallback, 
-                                                  state);
+                                                  state,
+                                                  false);
       if (res == TRI_ERROR_NO_ERROR) {
         size_t i, n; 
 
@@ -3808,11 +3810,11 @@ TRI_vector_pointer_t* TRI_IndexesDocumentCollection (TRI_document_collection_t* 
 /// @brief drops an index
 ////////////////////////////////////////////////////////////////////////////////
 
-bool TRI_DropIndexDocumentCollection (TRI_document_collection_t* document, TRI_idx_iid_t iid) {
+bool TRI_DropIndexDocumentCollection (TRI_document_collection_t* document, 
+                                      TRI_idx_iid_t iid) {
   TRI_index_t* found;
   TRI_primary_collection_t* primary;
-  size_t n;
-  size_t i;
+  size_t i, n;
 
   if (iid == 0) {
     return true;
@@ -3863,6 +3865,8 @@ bool TRI_DropIndexDocumentCollection (TRI_document_collection_t* document, TRI_i
 
     removeResult = TRI_RemoveIndexFile(primary, found);
     TRI_FreeIndex(found);
+
+    TRI_DropIndexReplication(primary->base._info._cid, iid);
 
     return removeResult;
   }
