@@ -66,7 +66,7 @@
 #include "VocBase/edge-collection.h"
 #include "VocBase/general-cursor.h"
 #include "VocBase/key-generator.h"
-#include "VocBase/replication.h"
+#include "VocBase/replication-logger.h"
 #include "VocBase/voc-shaper.h"
 #include "v8.h"
 

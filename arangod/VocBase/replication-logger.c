@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-/// @brief replication
+/// @brief replication logger
 ///
 /// @file
 ///
@@ -25,7 +25,7 @@
 /// @author Copyright 2011-2013, triAGENS GmbH, Cologne, Germany
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "replication.h"
+#include "replication-logger.h"
 
 #include "BasicsC/conversions.h"
 #include "BasicsC/string-buffer.h"
@@ -47,8 +47,7 @@
 /// @{
 ////////////////////////////////////////////////////////////////////////////////
 
-#define LOG_REPLICATION(buffer) \
-  printf("REPLICATION: %s\n\n", buffer)
+#define LOG_REPLICATION(buffer) printf("REPLICATION: %s\n\n", buffer)
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief shortcut function
@@ -587,7 +586,6 @@ int TRI_TransactionReplication (TRI_transaction_t const* trx) {
   if (StringifyBeginTransaction(buffer, TRI_NewTickVocBase(), trx)) {
     LOG_REPLICATION(buffer->_buffer);
   }
-  TRI_ClearStringBuffer(buffer);
 
   n = trx->_collections._length;
 
@@ -615,8 +613,6 @@ int TRI_TransactionReplication (TRI_transaction_t const* trx) {
       if (StringifyDocumentOperation(buffer, document, trx->_id, trxOperation->_type, trxOperation->_marker, trxOperation->_oldHeader)) {
         LOG_REPLICATION(buffer->_buffer);
       }
-
-      TRI_ClearStringBuffer(buffer);
     }
   }
   

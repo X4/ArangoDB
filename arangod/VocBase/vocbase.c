@@ -50,7 +50,7 @@
 #include "VocBase/document-collection.h"
 #include "VocBase/general-cursor.h"
 #include "VocBase/primary-collection.h"
-#include "VocBase/replication.h"
+#include "VocBase/replication-logger.h"
 #include "VocBase/server-id.h"
 #include "VocBase/shadow-data.h"
 #include "VocBase/synchroniser.h"
