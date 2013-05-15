@@ -1254,6 +1254,7 @@ TRI_vocbase_t* TRI_OpenVocBase (char const* path) {
   vocbase->_authInfoLoaded = false;
 
   vocbase->_cursors = TRI_CreateShadowsGeneralCursor();
+
   if (vocbase->_cursors == NULL) {
     LOG_FATAL_AND_EXIT("cannot create cursors");
   }
@@ -1316,7 +1317,6 @@ TRI_vocbase_t* TRI_OpenVocBase (char const* path) {
     LOG_FATAL_AND_EXIT("reading/creating server id failed");
   }
 
-
   // check if we can find a SHUTDOWN file
   // this file will contain the last tick value issued by the server
   // if we find the file, we can avoid scanning datafiles for the last used tick value
@@ -1359,7 +1359,22 @@ TRI_vocbase_t* TRI_OpenVocBase (char const* path) {
 
 
   LOG_TRACE("last tick value found: %llu", (unsigned long long) GetTick());  
-    
+
+
+#ifdef TRI_ENABLE_REPLICATION
+  vocbase->_replicationLogger = TRI_CreateReplicationLogger("/tmp/replication", 64 * 1024 * 1024, false);
+
+  if (vocbase->_replicationLogger == NULL) {
+    LOG_FATAL_AND_EXIT("initialising replication failed");
+  }
+  else {
+    res = TRI_StartReplicationLogger(vocbase->_replicationLogger);
+
+    if (res != TRI_ERROR_NO_ERROR) {
+      LOG_FATAL_AND_EXIT("unable to start replication");
+    }
+  }
+#endif
 
   // now remove SHUTDOWN file if it was present
   if (! iterateMarkers) {
@@ -1420,6 +1435,11 @@ void TRI_DestroyVocBase (TRI_vocbase_t* vocbase) {
   }
 
   TRI_DestroyVectorPointer(&collections);
+
+#ifdef TRI_ENABLE_REPLICATION
+  TRI_FreeReplicationLogger(vocbase->_replicationLogger);
+  vocbase->_replicationLogger = NULL;
+#endif
 
   // this will signal the synchroniser and the compactor threads to do one last iteration
   vocbase->_state = 2;

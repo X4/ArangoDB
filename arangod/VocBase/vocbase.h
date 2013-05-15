@@ -48,6 +48,7 @@ extern "C" {
 struct TRI_primary_collection_s;
 struct TRI_col_info_s;
 struct TRI_shadow_store_s;
+struct TRI_replication_logger_s;
 struct TRI_transaction_context_s;
 
 // -----------------------------------------------------------------------------
@@ -313,6 +314,10 @@ typedef struct TRI_vocbase_s {
   bool                      _authInfoFlush;
 
   struct TRI_transaction_context_s* _transactionContext;
+
+#ifdef TRI_ENABLE_REPLICATION
+  struct TRI_replication_logger_s* _replicationLogger;
+#endif
 
   // state of the database
   // 0 = inactive
