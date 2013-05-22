@@ -229,13 +229,18 @@ static int FlushLog (replication_log_t* l) {
 /// @brief close a log file
 ////////////////////////////////////////////////////////////////////////////////
 
-static int CloseLog (replication_log_t* l) {
+static int CloseLog (replication_log_t* l, 
+                     bool seal) {
   if (l->_fd == 0) {
     return TRI_ERROR_INTERNAL;
   }
 
   if (! l->_sealed) {
     FlushLog(l);
+
+    if (seal) {
+      l->_sealed = true;
+    }
   }
   
   TRI_CLOSE(l->_fd);
@@ -305,7 +310,7 @@ replication_log_t* CreateLog (TRI_voc_fid_t fid) {
 
 static void DestroyLog (replication_log_t* l) {
   if (l->_fd > 0) {
-    CloseLog(l);
+    CloseLog(l, false);
   }
 }
 
@@ -352,14 +357,15 @@ static replication_log_t* GetLastLog (TRI_replication_logger_t const* logger) {
 /// note: must hold the lock when calling this
 ////////////////////////////////////////////////////////////////////////////////
 
-static int CloseActiveLog (TRI_replication_logger_t* logger) {
+static int CloseActiveLog (TRI_replication_logger_t* logger, 
+                           bool seal) {
   replication_log_t* l = GetLastLog(logger);
 
   if (l == NULL) {
     return TRI_ERROR_INTERNAL;
   }
 
-  return CloseLog(l);
+  return CloseLog(l, seal);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -571,7 +577,7 @@ static int StopReplicationLogger (TRI_replication_logger_t* logger) {
     return TRI_ERROR_INTERNAL;
   }
 
-  CloseActiveLog(logger);
+  CloseActiveLog(logger, false);
 
   logger->_active = false;
   LOG_INFO("stopped replication logger");
@@ -610,7 +616,14 @@ static int LogComparator (const void* lhs, const void* rhs) {
   const replication_log_t* l = *((replication_log_t**) lhs);
   const replication_log_t* r = *((replication_log_t**) rhs);
 
-  return (int) (l->_id - r->_id);
+  if (l->_id < r->_id) {
+    return -1;
+  }
+  else if (l->_id > r->_id) {
+    return 1;
+  }
+
+  return 0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -866,6 +879,7 @@ static int LogEvent (TRI_replication_logger_t* logger,
   if (len < 1) {
     // buffer is empty
     ReturnBuffer(logger, buffer);
+
     return TRI_ERROR_NO_ERROR;
   }
   
@@ -889,7 +903,21 @@ static int LogEvent (TRI_replication_logger_t* logger,
   }
 
   res = TRI_WRITE(l->_fd, TRI_BeginStringBuffer(buffer), len + 1);
-  
+
+  if (res >= 0) {
+    // set new size of log file
+    l->_size += (int64_t) (len + 1);
+
+    // TODO: update tickMax
+
+    // check for rotation
+    if (l->_size >= logger->_logSize) {
+      CloseActiveLog(logger, true);
+
+      res = OpenLog(logger);
+    }
+  }
+
   TRI_UnlockMutex(&logger->_lock);
   
   // lock end
@@ -897,7 +925,7 @@ static int LogEvent (TRI_replication_logger_t* logger,
   
   ReturnBuffer(logger, buffer);
 
-  if (res < 0) {
+  if (res != TRI_ERROR_NO_ERROR) {
     return TRI_ERROR_INTERNAL;
   }
 
@@ -1494,7 +1522,7 @@ int TRI_TransactionReplication (TRI_vocbase_t* vocbase,
     return TRI_ERROR_OUT_OF_MEMORY;
   }
 
-  return LogEvent(NULL, buffer);
+  return LogEvent(logger, buffer);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
