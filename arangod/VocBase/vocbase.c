@@ -1199,7 +1199,8 @@ bool TRI_msync (int fd, void* mmHandle, char const* begin, char const* end) {
 /// @brief opens an exiting database, scans all collections
 ////////////////////////////////////////////////////////////////////////////////
 
-TRI_vocbase_t* TRI_OpenVocBase (char const* path) {
+TRI_vocbase_t* TRI_OpenVocBase (char const* path, 
+                                TRI_replication_setup_t* replicationSetup) {
   TRI_vocbase_t* vocbase;
   char* lockFile;
   bool iterateMarkers;
@@ -1362,12 +1363,13 @@ TRI_vocbase_t* TRI_OpenVocBase (char const* path) {
 
 
 #ifdef TRI_ENABLE_REPLICATION
-  vocbase->_replicationLogger = TRI_CreateReplicationLogger("/tmp/replication", 64 * 1024 * 1024, false);
+  vocbase->_replicationLogger = TRI_CreateReplicationLogger(replicationSetup);
 
   if (vocbase->_replicationLogger == NULL) {
     LOG_FATAL_AND_EXIT("initialising replication failed");
   }
-  else {
+
+  if (replicationSetup->_active) {
     res = TRI_StartReplicationLogger(vocbase->_replicationLogger);
 
     if (res != TRI_ERROR_NO_ERROR) {
@@ -1375,6 +1377,7 @@ TRI_vocbase_t* TRI_OpenVocBase (char const* path) {
     }
   }
 #endif
+
 
   // now remove SHUTDOWN file if it was present
   if (! iterateMarkers) {

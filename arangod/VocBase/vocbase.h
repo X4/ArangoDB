@@ -49,6 +49,7 @@ struct TRI_primary_collection_s;
 struct TRI_col_info_s;
 struct TRI_shadow_store_s;
 struct TRI_replication_logger_s;
+struct TRI_replication_setup_s;
 struct TRI_transaction_context_s;
 
 // -----------------------------------------------------------------------------
@@ -437,7 +438,8 @@ bool TRI_msync (int fd, void* mmHandle, char const* begin, char const* end);
 /// @brief opens an exiting database, loads all collections
 ////////////////////////////////////////////////////////////////////////////////
 
-TRI_vocbase_t* TRI_OpenVocBase (char const* path);
+TRI_vocbase_t* TRI_OpenVocBase (char const* path, 
+                                struct TRI_replication_setup_s*);
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief closes a database and all collections

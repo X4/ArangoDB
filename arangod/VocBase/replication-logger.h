@@ -25,8 +25,10 @@
 /// @author Copyright 2011-2013, triAGENS GmbH, Cologne, Germany
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef TRIAGENS_VOC_BASE_REPLICATION_H
-#define TRIAGENS_VOC_BASE_REPLICATION_H 1
+#ifndef TRIAGENS_VOC_BASE_REPLICATION_LOGGER_H
+#define TRIAGENS_VOC_BASE_REPLICATION_LOGGER_H 1
+
+#include "BasicsC/common.h"
 
 #include "VocBase/document-collection.h"
 #include "VocBase/vocbase.h"
@@ -54,7 +56,7 @@ struct TRI_vocbase_s;
 // -----------------------------------------------------------------------------
 
 // -----------------------------------------------------------------------------
-// --SECTION--                                                     private types
+// --SECTION--                                                    public defines
 // -----------------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -63,16 +65,64 @@ struct TRI_vocbase_s;
 ////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////
+/// @brief default maximum number of logs to be kept 
+////////////////////////////////////////////////////////////////////////////////
+
+#define TRI_REPLICATION_DEFAULT_LOG_COUNT (16)
+
+////////////////////////////////////////////////////////////////////////////////
+/// @brief minimum number of logs to be kept 
+////////////////////////////////////////////////////////////////////////////////
+
+#define TRI_REPLICATION_MIN_LOG_COUNT (2)
+
+////////////////////////////////////////////////////////////////////////////////
+/// @brief default size for each log file
+////////////////////////////////////////////////////////////////////////////////
+
+#define TRI_REPLICATION_DEFAULT_LOG_SIZE  (64 * 1024 * 1024)
+
+////////////////////////////////////////////////////////////////////////////////
+/// @brief minimum size for each log file
+////////////////////////////////////////////////////////////////////////////////
+
+#define TRI_REPLICATION_MIN_LOG_SIZE (1 * 1024 * 1024)
+
+////////////////////////////////////////////////////////////////////////////////
+/// @}
+////////////////////////////////////////////////////////////////////////////////
+
+// -----------------------------------------------------------------------------
+// --SECTION--                                                      public types
+// -----------------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////////////
+/// @addtogroup VocBase
+/// @{
+////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////
+/// @brief replication setup
+////////////////////////////////////////////////////////////////////////////////
+
+typedef struct TRI_replication_setup_s {
+  char*    _path;
+  size_t   _maxLogs;
+  int64_t  _logSize;
+  bool     _waitForSync;
+  bool     _active;
+}
+TRI_replication_setup_t;
+
+////////////////////////////////////////////////////////////////////////////////
 /// @brief context information for replication logging
 ////////////////////////////////////////////////////////////////////////////////
 
 typedef struct TRI_replication_logger_s {
-  TRI_mutex_t           _lock;
-  int64_t               _logSize;
-  TRI_vector_pointer_t  _logs;
-  bool                  _active;
-  bool                  _waitForSync;
-  char*                 _path;
+  TRI_mutex_t              _lock;
+  TRI_vector_pointer_t     _logs;
+  TRI_replication_setup_t  _setup;
+  bool                     _active;
 }
 TRI_replication_logger_t;
 
@@ -93,9 +143,7 @@ TRI_replication_logger_t;
 /// @brief create a replication logger
 ////////////////////////////////////////////////////////////////////////////////
 
-TRI_replication_logger_t* TRI_CreateReplicationLogger (char const*,
-                                                       int64_t,
-                                                       bool);
+TRI_replication_logger_t* TRI_CreateReplicationLogger (TRI_replication_setup_t const*);
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief destroy a replication logger

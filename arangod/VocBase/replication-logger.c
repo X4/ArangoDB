@@ -112,8 +112,7 @@
 /// @brief transaction control operations
 ////////////////////////////////////////////////////////////////////////////////
 
-#define OPERATION_TRANSACTION_BEGIN  "transaction-begin"
-#define OPERATION_TRANSACTION_COMMIT "transaction-commit"
+#define OPERATION_TRANSACTION        "transaction"
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief document operations
@@ -151,7 +150,6 @@ typedef struct replication_log_s {
   bool            _sealed;
   int64_t         _size;
   TRI_voc_tick_t  _tickMin;
-  TRI_voc_tick_t  _tickMax;
 }
 replication_log_t;
 
@@ -197,7 +195,7 @@ static char* CreateFilenameLog (TRI_replication_logger_t const* logger,
   else {
     char* absFilename;
 
-    absFilename = TRI_Concatenate2File(logger->_path, relFilename);
+    absFilename = TRI_Concatenate2File(logger->_setup._path, relFilename);
     TRI_FreeString(TRI_CORE_MEM_ZONE, relFilename);
 
     return absFilename;
@@ -250,6 +248,27 @@ static int CloseLog (replication_log_t* l,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+/// @brief remove a log file
+////////////////////////////////////////////////////////////////////////////////
+
+static int RemoveLog (TRI_replication_logger_t* logger,
+                      replication_log_t* l) {
+  char* absFilename;
+  int res;
+
+  if (l->_fd > 0) {
+    CloseLog(l, ! l->_sealed);
+  }
+
+  absFilename = CreateFilenameLog(logger, l->_id, false);
+
+  res = TRI_UnlinkFile(absFilename);
+  TRI_FreeString(TRI_CORE_MEM_ZONE, absFilename);
+
+  return res;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 /// @brief create a JSON representation of a log file
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -273,9 +292,6 @@ TRI_json_t* JsonLog (TRI_replication_logger_t const* logger,
   
     tickString = TRI_StringUInt64((uint64_t) l->_tickMin);
     TRI_Insert3ArrayJson(TRI_CORE_MEM_ZONE, json, "tickMin", TRI_CreateStringJson(TRI_CORE_MEM_ZONE, tickString));
-    
-    tickString = TRI_StringUInt64((uint64_t) l->_tickMax);
-    TRI_Insert3ArrayJson(TRI_CORE_MEM_ZONE, json, "tickMax", TRI_CreateStringJson(TRI_CORE_MEM_ZONE, tickString));
   }
 
   return json;
@@ -298,7 +314,6 @@ replication_log_t* CreateLog (TRI_voc_fid_t fid) {
     l->_flushed  = true;
     l->_sealed   = true;
     l->_tickMin  = fid;
-    l->_tickMax  = fid;
   }
 
   return l;
@@ -408,7 +423,7 @@ static int SaveStateReplicationLogger (TRI_replication_logger_t* logger) {
   char* filename;
   bool ok;
   
-  filename = TRI_Concatenate2File(logger->_path, "replication.json");
+  filename = TRI_Concatenate2File(logger->_setup._path, "replication.json");
 
   if (filename == NULL) {
     return TRI_ERROR_OUT_OF_MEMORY;
@@ -446,7 +461,7 @@ static TRI_json_t* LoadStateReplicationLogger (TRI_replication_logger_t* logger)
   char* filename;
 
   // read replication state  
-  filename = TRI_Concatenate2File(logger->_path, "replication.json");
+  filename = TRI_Concatenate2File(logger->_setup._path, "replication.json");
 
   if (filename == NULL) {
     return NULL;
@@ -466,6 +481,46 @@ static TRI_json_t* LoadStateReplicationLogger (TRI_replication_logger_t* logger)
 
   // might be NULL
   return json;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// @brief remove old, currently unused logfiles
+/// note: must hold the lock when calling this
+////////////////////////////////////////////////////////////////////////////////
+
+static bool RemoveOldReplicationLogger (TRI_replication_logger_t* logger) {
+  bool worked;
+
+  worked = false;
+
+  if (logger->_setup._maxLogs > 1 && 
+      logger->_logs._length > logger->_setup._maxLogs) {
+    size_t n;
+
+    // we'll be removing this many logs
+    n = logger->_logs._length - logger->_setup._maxLogs;
+
+    while (n > 0) {
+      // pick the first log in the vector
+      replication_log_t* l = TRI_AtVectorPointer(&logger->_logs, 0);
+
+      if (l->_sealed) {
+        if (RemoveLog(logger, l) == TRI_ERROR_NO_ERROR) {
+          FreeLog(l);
+
+          TRI_RemoveVectorPointer(&logger->_logs, 0);
+          n--;
+          worked = true;
+
+          continue;
+        }
+      }
+
+      break;
+    }
+  }
+
+  return worked;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -555,6 +610,10 @@ static int StartReplicationLogger (TRI_replication_logger_t* logger) {
 
   if (logger->_active) {
     return TRI_ERROR_INTERNAL;
+  }
+
+  if (RemoveOldReplicationLogger(logger)) {
+    SaveStateReplicationLogger(logger);
   }
 
   res = OpenLog(logger);
@@ -649,7 +708,6 @@ static int AddLogReplicationLogger (TRI_replication_logger_t* logger,
   replication_log_t* l;
   TRI_json_t* id;
   TRI_json_t* tickMin;
-  TRI_json_t* tickMax;
   TRI_json_t* sealed;
   TRI_voc_fid_t fid;
   char* absFilename;
@@ -660,16 +718,12 @@ static int AddLogReplicationLogger (TRI_replication_logger_t* logger,
 
   id = TRI_LookupArrayJson(json, "id");
   tickMin = TRI_LookupArrayJson(json, "tickMin");
-  tickMax = TRI_LookupArrayJson(json, "tickMax");
   sealed  = TRI_LookupArrayJson(json, "sealed");
 
   if (id == NULL || id->_type != TRI_JSON_STRING) {
     return TRI_ERROR_INTERNAL;
   }
   if (tickMin == NULL || tickMin->_type != TRI_JSON_STRING) {
-    return TRI_ERROR_INTERNAL;
-  }
-  if (tickMax == NULL || tickMax->_type != TRI_JSON_STRING) {
     return TRI_ERROR_INTERNAL;
   }
   if (sealed == NULL || sealed->_type != TRI_JSON_BOOLEAN) {
@@ -688,7 +742,6 @@ static int AddLogReplicationLogger (TRI_replication_logger_t* logger,
   }
   
   l->_tickMin = TRI_UInt64String(tickMin->_value._string.data);
-  l->_tickMax = TRI_UInt64String(tickMax->_value._string.data);
   l->_sealed = sealed->_value._boolean;
 
   absFilename = CreateFilenameLog(logger, fid, false);
@@ -706,12 +759,11 @@ static int AddLogReplicationLogger (TRI_replication_logger_t* logger,
     return TRI_ERROR_INTERNAL;
   }
   
-  LOG_DEBUG("adding replication log file '%s', size: %lld, sealed: %d, tickMin: %llu, tickMax: %llu", 
+  LOG_DEBUG("adding replication log file '%s', size: %lld, sealed: %d, tickMin: %llu", 
             absFilename,
             (long long int) l->_size,
             (int) l->_sealed,
-            (unsigned long long) l->_tickMin,
-            (unsigned long long) l->_tickMax);
+            (unsigned long long) l->_tickMin);
 
   TRI_FreeString(TRI_CORE_MEM_ZONE, absFilename);
 
@@ -773,7 +825,7 @@ static int ScanPathReplicationLogger (TRI_replication_logger_t* logger) {
   size_t i, n;
   int res;
   
-  if (! TRI_IsDirectory(logger->_path)) {
+  if (! TRI_IsDirectory(logger->_setup._path)) {
     return TRI_ERROR_FILE_NOT_FOUND;
   }
   
@@ -794,7 +846,7 @@ static int ScanPathReplicationLogger (TRI_replication_logger_t* logger) {
 
   res = TRI_ERROR_NO_ERROR;
 
-  files = TRI_FilesDirectory(logger->_path);
+  files = TRI_FilesDirectory(logger->_setup._path);
   n = files._length;
   
   regcomp(&re, "^replication-([0-9]+)\\\\.db$", REG_EXTENDED);
@@ -873,7 +925,7 @@ static int LogEvent (TRI_replication_logger_t* logger,
 
   assert(logger != NULL);
   assert(buffer != NULL);
-
+              
   len = TRI_LengthStringBuffer(buffer);
 
   if (len < 1) {
@@ -908,11 +960,12 @@ static int LogEvent (TRI_replication_logger_t* logger,
     // set new size of log file
     l->_size += (int64_t) (len + 1);
 
-    // TODO: update tickMax
-
     // check for rotation
-    if (l->_size >= logger->_logSize) {
+    if (l->_size >= logger->_setup._logSize) {
       CloseActiveLog(logger, true);
+
+      // remove old, now superfluous logs
+      RemoveOldReplicationLogger(logger);
 
       res = OpenLog(logger);
     }
@@ -949,20 +1002,18 @@ static int LogEvent (TRI_replication_logger_t* logger,
 /// @brief create a replication logger
 ////////////////////////////////////////////////////////////////////////////////
 
-TRI_replication_logger_t* TRI_CreateReplicationLogger (char const* path,
-                                                       int64_t logSize,
-                                                       bool waitForSync) {
+TRI_replication_logger_t* TRI_CreateReplicationLogger (TRI_replication_setup_t const* setup) {
   TRI_replication_logger_t* logger;
   int res;
 
-  if (! TRI_IsDirectory(path)) {
-    LOG_ERROR("replication directory '%s' does not exist", path);
+  if (! TRI_IsDirectory(setup->_path)) {
+    LOG_ERROR("replication directory '%s' does not exist", setup->_path);
 
     return NULL;
   }
 
-  if (! TRI_IsWritable(path)) {
-    LOG_ERROR("replication directory '%s' is not writable", path);
+  if (! TRI_IsWritable(setup->_path)) {
+    LOG_ERROR("replication directory '%s' is not writable", setup->_path);
 
     return NULL;
   }
@@ -975,10 +1026,11 @@ TRI_replication_logger_t* TRI_CreateReplicationLogger (char const* path,
 
   TRI_InitMutex(&logger->_lock);
 
-  logger->_logSize       = logSize;
-  logger->_path          = TRI_DuplicateStringZ(TRI_CORE_MEM_ZONE, path);
-  logger->_active        = false;
-  logger->_waitForSync   = waitForSync;
+  logger->_setup._logSize       = setup->_logSize;
+  logger->_setup._path          = TRI_DuplicateStringZ(TRI_CORE_MEM_ZONE, setup->_path);
+  logger->_setup._maxLogs       = setup->_maxLogs;
+  logger->_setup._waitForSync   = setup->_waitForSync;
+  logger->_active               = false;
 
   TRI_InitVectorPointer(&logger->_logs, TRI_CORE_MEM_ZONE);
 
@@ -1017,7 +1069,7 @@ void TRI_DestroyReplicationLogger (TRI_replication_logger_t* logger) {
   
   TRI_DestroyVectorPointer(&logger->_logs);
 
-  TRI_FreeString(TRI_CORE_MEM_ZONE, logger->_path);
+  TRI_FreeString(TRI_CORE_MEM_ZONE, logger->_setup._path);
   TRI_DestroyMutex(&logger->_lock);
 }
 
@@ -1067,7 +1119,6 @@ int TRI_StopReplicationLogger (TRI_replication_logger_t* logger) {
 ////////////////////////////////////////////////////////////////////////////////
 
 static bool StringifyBasics (TRI_string_buffer_t* buffer,
-                             const TRI_voc_tick_t tick,
                              char const* operationType) {
   if (buffer == NULL) {
     return false;
@@ -1075,8 +1126,6 @@ static bool StringifyBasics (TRI_string_buffer_t* buffer,
 
   APPEND_STRING(buffer, "{\"type\":\"");
   APPEND_STRING(buffer, operationType);
-  APPEND_STRING(buffer, "\",\"tick\":\""); 
-  APPEND_UINT64(buffer, (uint64_t) tick);
   APPEND_STRING(buffer, "\",");
 
   return true;
@@ -1095,96 +1144,6 @@ static bool StringifyIdTransaction (TRI_string_buffer_t* buffer,
   APPEND_STRING(buffer, "\"tid\":\"");
   APPEND_UINT64(buffer, (uint64_t) tid);
   APPEND_CHAR(buffer, '"');
-
-  return true;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-/// @brief stringify the collections of a transaction
-////////////////////////////////////////////////////////////////////////////////
-
-static bool StringifyCollectionsTransaction (TRI_string_buffer_t* buffer,
-                                             TRI_transaction_t const* trx) {
-  size_t i, n;
-  bool empty;
-  
-  if (buffer == NULL) {
-    return false;
-  }
-
-  APPEND_STRING(buffer, ",\"collections\":[");
-
-  n = trx->_collections._length;
-  empty = true;
-
-  for (i = 0; i < n; ++i) {
-    TRI_transaction_collection_t* trxCollection;
-
-    trxCollection = TRI_AtVectorPointer(&trx->_collections, i);
-
-    if (trxCollection->_operations == NULL) {
-      // no markers available for collection
-      continue;
-    }
-
-    if (empty) {
-      APPEND_CHAR(buffer, '"');
-
-      empty = false;
-    }
-    else {
-      APPEND_STRING(buffer, ",\"");
-    }
-
-    APPEND_UINT64(buffer, (uint64_t) trxCollection->_cid);
-    APPEND_CHAR(buffer, '"');
-  }
-  
-  APPEND_STRING(buffer, "]");
-
-  return true;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-/// @brief stringify a "begin transaction" operation
-////////////////////////////////////////////////////////////////////////////////
-
-static bool StringifyBeginTransaction (TRI_string_buffer_t* buffer,
-                                       TRI_voc_tick_t tick,
-                                       TRI_transaction_t const* trx) {
-  if (! StringifyBasics(buffer, tick, OPERATION_TRANSACTION_BEGIN)) {
-    return false;
-  }
-
-  if (! StringifyIdTransaction(buffer, trx->_id)) {
-    return false;
-  }
-
-  if (! StringifyCollectionsTransaction(buffer, trx)) {
-    return false;
-  }
-
-  APPEND_CHAR(buffer, '}');
-
-  return true;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-/// @brief stringify a "commit transaction" operation
-////////////////////////////////////////////////////////////////////////////////
-
-static bool StringifyCommitTransaction (TRI_string_buffer_t* buffer,
-                                        TRI_voc_tick_t tick,
-                                        TRI_voc_tid_t tid) {
-  if (! StringifyBasics(buffer, tick, OPERATION_TRANSACTION_COMMIT)) {
-    return false;
-  }
-
-  if (! StringifyIdTransaction(buffer, tid)) {
-    return false;
-  }
-
-  APPEND_CHAR(buffer, '}');
 
   return true;
 }
@@ -1216,9 +1175,9 @@ static bool StringifyCollection (TRI_string_buffer_t* buffer,
     return false;
   }
 
-  APPEND_STRING(buffer, "\"collection\":{\"cid\":\"");
+  APPEND_STRING(buffer, "\"cid\":\"");
   APPEND_UINT64(buffer, (uint64_t) cid);
-  APPEND_STRING(buffer, "\"}");
+  APPEND_CHAR(buffer, '"');
 
   return true;
 }
@@ -1228,10 +1187,9 @@ static bool StringifyCollection (TRI_string_buffer_t* buffer,
 ////////////////////////////////////////////////////////////////////////////////
 
 static bool StringifyCreateCollection (TRI_string_buffer_t* buffer,
-                                       TRI_voc_tick_t tick,
                                        char const* operationType,
                                        TRI_json_t const* json) {
-  if (! StringifyBasics(buffer, tick, operationType)) {
+  if (! StringifyBasics(buffer, operationType)) {
     return false;
   }
 
@@ -1247,9 +1205,8 @@ static bool StringifyCreateCollection (TRI_string_buffer_t* buffer,
 ////////////////////////////////////////////////////////////////////////////////
 
 static bool StringifyDropCollection (TRI_string_buffer_t* buffer,
-                                     TRI_voc_tick_t tick,
                                      TRI_voc_cid_t cid) {
-  if (! StringifyBasics(buffer, tick, OPERATION_COLLECTION_DROP)) {
+  if (! StringifyBasics(buffer, OPERATION_COLLECTION_DROP)) {
     return false;
   }
   
@@ -1267,10 +1224,9 @@ static bool StringifyDropCollection (TRI_string_buffer_t* buffer,
 ////////////////////////////////////////////////////////////////////////////////
 
 static bool StringifyRenameCollection (TRI_string_buffer_t* buffer,
-                                       TRI_voc_tick_t tick,
                                        TRI_voc_cid_t cid,
                                        char const* name) {
-  if (! StringifyBasics(buffer, tick, OPERATION_COLLECTION_RENAME)) {
+  if (! StringifyBasics(buffer, OPERATION_COLLECTION_RENAME)) {
     return false;
   }
 
@@ -1291,11 +1247,9 @@ static bool StringifyRenameCollection (TRI_string_buffer_t* buffer,
 ////////////////////////////////////////////////////////////////////////////////
 
 static bool StringifyCreateIndex (TRI_string_buffer_t* buffer,
-                                  TRI_voc_tick_t tick,
                                   TRI_voc_cid_t cid,
                                   TRI_json_t const* json) {
-
-  if (! StringifyBasics(buffer, tick, OPERATION_INDEX_CREATE)) {
+  if (! StringifyBasics(buffer, OPERATION_INDEX_CREATE)) {
     return false;
   }
   
@@ -1315,10 +1269,9 @@ static bool StringifyCreateIndex (TRI_string_buffer_t* buffer,
 ////////////////////////////////////////////////////////////////////////////////
 
 static bool StringifyDropIndex (TRI_string_buffer_t* buffer,
-                                TRI_voc_tick_t tick,
                                 TRI_voc_cid_t cid,
                                 TRI_idx_iid_t iid) {
-  if (! StringifyBasics(buffer, tick, OPERATION_INDEX_DROP)) {
+  if (! StringifyBasics(buffer, OPERATION_INDEX_DROP)) {
     return false;
   }
   
@@ -1343,10 +1296,10 @@ static bool StringifyDropIndex (TRI_string_buffer_t* buffer,
 
 static bool StringifyDocumentOperation (TRI_string_buffer_t* buffer,
                                         TRI_document_collection_t* document,
-                                        TRI_voc_tid_t tid,
                                         TRI_voc_document_operation_e type,
                                         TRI_df_marker_t const* marker,
-                                        TRI_doc_mptr_t const* oldHeader) {
+                                        TRI_doc_mptr_t const* oldHeader,
+                                        bool withCid) {
   char* typeString;
   TRI_voc_rid_t oldRev;
   TRI_voc_key_t key;
@@ -1367,18 +1320,15 @@ static bool StringifyDocumentOperation (TRI_string_buffer_t* buffer,
     return false;
   }
   
-  if (! StringifyBasics(buffer, marker->_tick, typeString)) {
+  if (! StringifyBasics(buffer, typeString)) {
     return false;
   }
   
-  if (! StringifyIdTransaction(buffer, tid)) {
-    return false;
-  }
-
-  APPEND_CHAR(buffer, ','); 
-  
-  if (! StringifyCollection(buffer, document->base.base._info._cid)) {
-    return false;
+  if (withCid) {
+    if (! StringifyCollection(buffer, document->base.base._info._cid)) {
+      return false;
+    }
+    APPEND_CHAR(buffer, ',');
   }
   
   if (marker->_type == TRI_DOC_MARKER_KEY_DELETION) {
@@ -1397,12 +1347,12 @@ static bool StringifyDocumentOperation (TRI_string_buffer_t* buffer,
     return false;
   }
 
-  APPEND_STRING(buffer, ",\"key\":\""); 
+  APPEND_STRING(buffer, "\"key\":\""); 
   // key is user-defined, but does not need escaping
   APPEND_STRING(buffer, key); 
 
   if (oldRev > 0) {
-    APPEND_STRING(buffer, ",\"oldRev\":\""); 
+    APPEND_STRING(buffer, "\",\"oldRev\":\""); 
     APPEND_UINT64(buffer, (uint64_t) oldRev); 
   }
 
@@ -1451,6 +1401,77 @@ static bool StringifyDocumentOperation (TRI_string_buffer_t* buffer,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+/// @brief stringify a transaction
+////////////////////////////////////////////////////////////////////////////////
+
+static bool StringifyTransaction (TRI_string_buffer_t* buffer,
+                                  TRI_transaction_t const* trx) {
+  size_t i, n;
+  bool printed;
+
+  if (! StringifyBasics(buffer, OPERATION_TRANSACTION)) {
+    return false;
+  }
+   
+  if (! StringifyIdTransaction(buffer, trx->_id)) {
+    return false;
+  }
+
+  APPEND_STRING(buffer, ",\"collections\":{");
+
+  printed = false;
+  n = trx->_collections._length;
+
+  for (i = 0; i < n; ++i) {
+    TRI_transaction_collection_t* trxCollection;
+    TRI_document_collection_t* document;
+    size_t j, k;
+
+    trxCollection = TRI_AtVectorPointer(&trx->_collections, i);
+
+    if (trxCollection->_operations == NULL) {
+      // no markers available for collection
+      continue;
+    }
+    
+    document = (TRI_document_collection_t*) trxCollection->_collection->_collection;
+      
+    if (printed) {
+      APPEND_CHAR(buffer, ',');
+    }
+    else {
+      printed = true;
+    }
+  
+    APPEND_STRING(buffer, "\"cid\":\"");
+    APPEND_UINT64(buffer, (uint64_t) document->base.base._info._cid);
+    APPEND_STRING(buffer, "\",\"operations\":[");
+
+    // write the individual operations
+    k = trxCollection->_operations->_length;
+    for (j = 0; j < k; ++j) {
+      TRI_transaction_operation_t* trxOperation;
+
+      trxOperation = TRI_AtVector(trxCollection->_operations, j);
+
+      if (j > 0) {
+        APPEND_CHAR(buffer, ',');
+      }
+
+      if (! StringifyDocumentOperation(buffer, document, trxOperation->_type, trxOperation->_marker, trxOperation->_oldHeader, false)) {
+        return false;
+      }
+    }
+    
+    APPEND_CHAR(buffer, ']');
+  }
+
+  APPEND_STRING(buffer, "}}");
+
+  return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 /// @}
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -1471,57 +1492,20 @@ int TRI_TransactionReplication (TRI_vocbase_t* vocbase,
                                 TRI_transaction_t const* trx) {
   TRI_string_buffer_t* buffer;
   TRI_replication_logger_t* logger;
-
-  size_t i, n;
-
-  if (! trx->_replicate) {
-    return TRI_ERROR_NO_ERROR;
-  }
   
+  assert(trx->_replicate);
+  assert(trx->_hasOperations);
+
   logger = vocbase->_replicationLogger;
 
   buffer = GetBuffer(logger);
-    
-  if (! StringifyBeginTransaction(buffer, TRI_NewTickVocBase(), trx)) {
+  
+  if (! StringifyTransaction(buffer, trx)) {
     ReturnBuffer(logger, buffer);
+
     return TRI_ERROR_OUT_OF_MEMORY;
   }
-
-  n = trx->_collections._length;
-
-  for (i = 0; i < n; ++i) {
-    TRI_transaction_collection_t* trxCollection;
-    TRI_document_collection_t* document;
-    size_t j, k;
-
-    trxCollection = TRI_AtVectorPointer(&trx->_collections, i);
-
-    if (trxCollection->_operations == NULL) {
-      // no markers available for collection
-      continue;
-    }
-    
-    document = (TRI_document_collection_t*) trxCollection->_collection->_collection;
-
-    // write the individual operations
-    k = trxCollection->_operations->_length;
-    for (j = 0; j < k; ++j) {
-      TRI_transaction_operation_t* trxOperation;
-
-      trxOperation = TRI_AtVector(trxCollection->_operations, j);
-  
-      if (! StringifyDocumentOperation(buffer, document, trx->_id, trxOperation->_type, trxOperation->_marker, trxOperation->_oldHeader)) {
-        ReturnBuffer(logger, buffer);
-        return TRI_ERROR_OUT_OF_MEMORY;
-      }
-    }
-  }
-  
-  if (! StringifyCommitTransaction(buffer, TRI_NewTickVocBase(), trx->_id)) {
-    ReturnBuffer(logger, buffer);
-    return TRI_ERROR_OUT_OF_MEMORY;
-  }
-
+   
   return LogEvent(logger, buffer);
 }
 
@@ -1534,12 +1518,12 @@ int TRI_CreateCollectionReplication (TRI_vocbase_t* vocbase,
                                      TRI_json_t const* json) {
   TRI_string_buffer_t* buffer;
   TRI_replication_logger_t* logger;
-  
+
   logger = vocbase->_replicationLogger;
   
   buffer = GetBuffer(logger);
 
-  if (! StringifyCreateCollection(buffer, TRI_NewTickVocBase(), OPERATION_COLLECTION_CREATE, json)) {
+  if (! StringifyCreateCollection(buffer, OPERATION_COLLECTION_CREATE, json)) {
     ReturnBuffer(logger, buffer);
     return TRI_ERROR_OUT_OF_MEMORY;
   }
@@ -1560,7 +1544,7 @@ int TRI_DropCollectionReplication (TRI_vocbase_t* vocbase,
   
   buffer = GetBuffer(logger);
 
-  if (! StringifyDropCollection(buffer, TRI_NewTickVocBase(), cid)) {
+  if (! StringifyDropCollection(buffer, cid)) {
     ReturnBuffer(logger, buffer);
     return TRI_ERROR_OUT_OF_MEMORY;
   }
@@ -1582,7 +1566,7 @@ int TRI_RenameCollectionReplication (TRI_vocbase_t* vocbase,
   
   buffer = GetBuffer(logger);
 
-  if (! StringifyRenameCollection(buffer, TRI_NewTickVocBase(), cid, name)) {
+  if (! StringifyRenameCollection(buffer, cid, name)) {
     ReturnBuffer(logger, buffer);
     return TRI_ERROR_OUT_OF_MEMORY;
   }
@@ -1604,7 +1588,7 @@ int TRI_ChangePropertiesCollectionReplication (TRI_vocbase_t* vocbase,
   
   buffer = GetBuffer(logger);
 
-  if (! StringifyCreateCollection(buffer, TRI_NewTickVocBase(), OPERATION_COLLECTION_CHANGE, json)) {
+  if (! StringifyCreateCollection(buffer, OPERATION_COLLECTION_CHANGE, json)) {
     ReturnBuffer(logger, buffer);
     return TRI_ERROR_OUT_OF_MEMORY;
   }
@@ -1627,7 +1611,7 @@ int TRI_CreateIndexReplication (TRI_vocbase_t* vocbase,
   
   buffer = GetBuffer(logger);
 
-  if (! StringifyCreateIndex(buffer, TRI_NewTickVocBase(), cid, json)) {
+  if (! StringifyCreateIndex(buffer, cid, json)) {
     ReturnBuffer(logger, buffer);
     return TRI_ERROR_OUT_OF_MEMORY;
   }
@@ -1649,8 +1633,9 @@ int TRI_DropIndexReplication (TRI_vocbase_t* vocbase,
   
   buffer = GetBuffer(logger);
 
-  if (! StringifyDropIndex(buffer, TRI_NewTickVocBase(), cid, iid)) {
+  if (! StringifyDropIndex(buffer, cid, iid)) {
     ReturnBuffer(logger, buffer);
+
     return TRI_ERROR_OUT_OF_MEMORY;
   }
 
@@ -1673,8 +1658,9 @@ int TRI_DocumentReplication (TRI_vocbase_t* vocbase,
 
   buffer = GetBuffer(logger);
 
-  if (! StringifyDocumentOperation(buffer, document, 0, type, marker, oldHeader)) {
+  if (! StringifyDocumentOperation(buffer, document, type, marker, oldHeader, true)) {
     ReturnBuffer(logger, buffer);
+
     return TRI_ERROR_OUT_OF_MEMORY;
   }
 

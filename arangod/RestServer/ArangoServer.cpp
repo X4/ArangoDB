@@ -76,6 +76,7 @@
 #include "V8/v8-utils.h"
 #include "V8Server/ApplicationV8.h"
 #include "VocBase/auth.h"
+#include "VocBase/replication-logger.h"
 
 #ifdef TRI_ENABLE_MRUBY
 #include "MRServer/ApplicationMR.h"
@@ -190,6 +191,12 @@ ArangoServer::ArangoServer (int argc, char** argv)
     _forceSyncShapes(true),
     _forceSyncProperties(true),
     _developmentMode(false),
+    _defaultLanguage(),
+    _replicationPath(),
+    _replicationLogCount(TRI_REPLICATION_DEFAULT_LOG_COUNT),
+    _replicationLogSize(TRI_REPLICATION_DEFAULT_LOG_SIZE),
+    _replicationWaitForSync(false),
+    _replicationEnable(true),
     _vocbase(0) {
 
   // locate path to binary
@@ -342,6 +349,18 @@ void ArangoServer::buildApplicationServer () {
     ("jslint", &_jslint, "do not start as server, run js lint instead")
     ("javascript.unit-tests", &_unitTests, "do not start as server, run unit tests instead")
   ;
+  
+  // .............................................................................
+  // replication options
+  // .............................................................................
+  
+  additional[ApplicationServer::OPTIONS_REPLICATION + ":help-replication"]
+    ("replication.directory", &_replicationPath, "path to the replication directory")
+    ("replication.maximal-log-count", &_replicationLogCount, "maximum number of replication logs to keep")
+    ("replication.maximal-log-size", &_replicationLogSize, "maximum size of each replication log")
+    ("replication.force-sync-logs", &_replicationWaitForSync, "force syncing of replication log files to disk")
+    ("replication.enable", &_replicationEnable, "enable replication logging")
+  ;
 
   // .............................................................................
   // database options
@@ -439,8 +458,8 @@ void ArangoServer::buildApplicationServer () {
     LOGGER_DEBUG("setting nonce hash size to '" << optionNonceHashSize << "'" );
     Nonce::create(optionNonceHashSize);
   }
-  
-  
+
+
   // .............................................................................
   // disable access to the HTML admin interface
   // .............................................................................
@@ -450,12 +469,12 @@ void ArangoServer::buildApplicationServer () {
   }
 
   if (disableStatistics) {
-    TRI_ENABLE_STATISTICS =  false;
+    TRI_ENABLE_STATISTICS = false;
   }
 
   if (_defaultMaximalSize < TRI_JOURNAL_MINIMAL_SIZE) {
     // validate journal size
-    LOGGER_FATAL_AND_EXIT("invalid journal size. expected at least " << TRI_JOURNAL_MINIMAL_SIZE);
+    LOGGER_FATAL_AND_EXIT("invalid journal size. expecting at least " << TRI_JOURNAL_MINIMAL_SIZE);
   }
 
   // .............................................................................
@@ -465,7 +484,7 @@ void ArangoServer::buildApplicationServer () {
   vector<string> arguments = _applicationServer->programArguments();
 
   if (1 < arguments.size()) {
-    LOGGER_FATAL_AND_EXIT("expected at most one database directory, got " << arguments.size());
+    LOGGER_FATAL_AND_EXIT("expecting at most one database directory, got " << arguments.size());
   }
   else if (1 == arguments.size()) {
     _databasePath = arguments[0];
@@ -475,6 +494,40 @@ void ArangoServer::buildApplicationServer () {
     LOGGER_INFO("please use the '--database.directory' option");
     LOGGER_FATAL_AND_EXIT("no database path has been supplied, giving up");
   }
+  
+  
+  // .............................................................................
+  // check replication settings
+  // .............................................................................
+
+  if (_replicationPath.empty()) {
+    _replicationPath = _databasePath;
+    if (_databasePath.at(_databasePath.size() - 1) != TRI_DIR_SEPARATOR_CHAR) {
+      _replicationPath.push_back(TRI_DIR_SEPARATOR_CHAR);
+    }
+    _replicationPath.append("replication");
+
+    if (! TRI_IsDirectory(_replicationPath.c_str())) {
+      // create replication directory on the fly
+      if (! TRI_CreateDirectory(_replicationPath.c_str()) ||
+          ! TRI_IsWritable(_replicationPath.c_str())) {
+        LOGGER_FATAL_AND_EXIT("replication directory '" << _replicationPath << "' does not exist or is not writable");
+      }
+    }
+  }
+
+  if (_replicationLogCount < 2) {
+    LOGGER_FATAL_AND_EXIT("invalid value for --replication.log-file-count. expecting at least " << TRI_REPLICATION_MIN_LOG_COUNT);
+  }
+
+  if (_replicationLogSize < TRI_REPLICATION_MIN_LOG_COUNT) {
+    LOGGER_FATAL_AND_EXIT("invalid value for --replication.log-file-size. expecting at least " << TRI_REPLICATION_MIN_LOG_SIZE);
+  }
+  
+    
+  // .............................................................................
+  // now run arangod
+  // .............................................................................
 
   LOGGER_INFO("using default language '" << languageName << "'");
 
@@ -1079,20 +1132,28 @@ int ArangoServer::executeRubyConsole () {
 
 void ArangoServer::openDatabase () {
   TRI_InitialiseVocBase();
+  
+  TRI_replication_setup_t replicationSetup = { 
+    const_cast<char*>(_replicationPath.c_str()), 
+    _replicationLogCount, 
+    _replicationLogSize, 
+    _replicationWaitForSync, 
+    _replicationEnable 
+  };
 
-  _vocbase = TRI_OpenVocBase(_databasePath.c_str());
+  _vocbase = TRI_OpenVocBase(_databasePath.c_str(), &replicationSetup);
 
   if (! _vocbase) {
     LOGGER_INFO("please use the '--database.directory' option");
     LOGGER_FATAL_AND_EXIT("cannot open database '" << _databasePath << "'");
   }
 
-  _vocbase->_removeOnDrop = _removeOnDrop;
-  _vocbase->_removeOnCompacted = _removeOnCompacted;
-  _vocbase->_defaultMaximalSize = _defaultMaximalSize;
-  _vocbase->_defaultWaitForSync = _defaultWaitForSync;
-  _vocbase->_forceSyncShapes = _forceSyncShapes;
-  _vocbase->_forceSyncProperties = _forceSyncProperties;
+  _vocbase->_removeOnDrop         = _removeOnDrop;
+  _vocbase->_removeOnCompacted    = _removeOnCompacted;
+  _vocbase->_defaultMaximalSize   = _defaultMaximalSize;
+  _vocbase->_defaultWaitForSync   = _defaultWaitForSync;
+  _vocbase->_forceSyncShapes      = _forceSyncShapes;
+  _vocbase->_forceSyncProperties  = _forceSyncProperties;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

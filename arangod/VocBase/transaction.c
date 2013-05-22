@@ -788,7 +788,7 @@ static int WriteOperationsSingle (TRI_transaction_t* const trx) {
       // something went wrong. now write the "abort" marker
       WriteAbortMarkers(trx, i + 1);
     }
-    else {
+    else if (trx->_replicate) {
       TRI_TransactionReplication(trx->_context->_vocbase, trx);
     }
 
@@ -905,7 +905,7 @@ static int WriteOperationsMulti (TRI_transaction_t* const trx,
                                                     false);
           
       
-        if (res == TRI_ERROR_NO_ERROR) {
+        if (res == TRI_ERROR_NO_ERROR && trx->_replicate) {
           TRI_TransactionReplication(trx->_context->_vocbase, trx);
         }
       }
