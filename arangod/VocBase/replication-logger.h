@@ -47,6 +47,7 @@ struct TRI_doc_mptr_s;
 struct TRI_json_s;
 struct TRI_transaction_s;
 struct TRI_vocbase_col_s;
+struct TRI_vocbase_s;
 
 // -----------------------------------------------------------------------------
 // --SECTION--                                                REPLICATION LOGGER
@@ -143,7 +144,8 @@ int TRI_StopReplicationLogger (TRI_replication_logger_t*);
 
 #ifdef TRI_ENABLE_REPLICATION
 
-int TRI_TransactionReplication (struct TRI_transaction_s const*);
+int TRI_TransactionReplication (struct TRI_vocbase_s*,
+                                struct TRI_transaction_s const*);
 
 #else
 
@@ -157,7 +159,8 @@ int TRI_TransactionReplication (struct TRI_transaction_s const*);
 
 #ifdef TRI_ENABLE_REPLICATION
 
-int TRI_CreateCollectionReplication (TRI_voc_cid_t, 
+int TRI_CreateCollectionReplication (struct TRI_vocbase_s*,
+                                     TRI_voc_cid_t, 
                                      struct TRI_json_s const*);
 
 #else
@@ -172,7 +175,8 @@ int TRI_CreateCollectionReplication (TRI_voc_cid_t,
 
 #ifdef TRI_ENABLE_REPLICATION
 
-int TRI_DropCollectionReplication (TRI_voc_cid_t);
+int TRI_DropCollectionReplication (struct TRI_vocbase_s*,
+                                   TRI_voc_cid_t);
 
 #else
 
@@ -186,7 +190,8 @@ int TRI_DropCollectionReplication (TRI_voc_cid_t);
 
 #ifdef TRI_ENABLE_REPLICATION
 
-int TRI_RenameCollectionReplication (TRI_voc_cid_t,
+int TRI_RenameCollectionReplication (struct TRI_vocbase_s*,
+                                     TRI_voc_cid_t,
                                      char const*);
 
 #else
@@ -201,7 +206,8 @@ int TRI_RenameCollectionReplication (TRI_voc_cid_t,
 
 #ifdef TRI_ENABLE_REPLICATION
 
-int TRI_ChangePropertiesCollectionReplication (TRI_voc_cid_t,
+int TRI_ChangePropertiesCollectionReplication (struct TRI_vocbase_s*,
+                                               TRI_voc_cid_t,
                                                struct TRI_json_s const*);
 
 #else
@@ -216,7 +222,8 @@ int TRI_ChangePropertiesCollectionReplication (TRI_voc_cid_t,
 
 #ifdef TRI_ENABLE_REPLICATION
 
-int TRI_CreateIndexReplication (TRI_voc_cid_t,
+int TRI_CreateIndexReplication (struct TRI_vocbase_s*,
+                                TRI_voc_cid_t,
                                 TRI_idx_iid_t,
                                 struct TRI_json_s const*);
 
@@ -232,7 +239,8 @@ int TRI_CreateIndexReplication (TRI_voc_cid_t,
 
 #ifdef TRI_ENABLE_REPLICATION
 
-int TRI_DropIndexReplication (TRI_voc_cid_t,
+int TRI_DropIndexReplication (struct TRI_vocbase_s*,
+                              TRI_voc_cid_t,
                               TRI_idx_iid_t iid);
 
 #else
@@ -247,7 +255,8 @@ int TRI_DropIndexReplication (TRI_voc_cid_t,
 
 #ifdef TRI_ENABLE_REPLICATION
 
-int TRI_DocumentReplication (struct TRI_document_collection_s*,
+int TRI_DocumentReplication (struct TRI_vocbase_s*,
+                             struct TRI_document_collection_s*,
                              TRI_voc_document_operation_e,
                              struct TRI_df_marker_s const*,
                              struct TRI_doc_mptr_s const*);

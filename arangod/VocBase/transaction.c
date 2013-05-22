@@ -789,7 +789,7 @@ static int WriteOperationsSingle (TRI_transaction_t* const trx) {
       WriteAbortMarkers(trx, i + 1);
     }
     else {
-      TRI_TransactionReplication(trx);
+      TRI_TransactionReplication(trx->_context->_vocbase, trx);
     }
 
     return res;
@@ -906,7 +906,7 @@ static int WriteOperationsMulti (TRI_transaction_t* const trx,
           
       
         if (res == TRI_ERROR_NO_ERROR) {
-          TRI_TransactionReplication(trx);
+          TRI_TransactionReplication(trx->_context->_vocbase, trx);
         }
       }
     }
@@ -1786,7 +1786,7 @@ int TRI_AddOperationCollectionTransaction (TRI_transaction_collection_t* trxColl
     *written = true;
 
     if (res == TRI_ERROR_NO_ERROR) {
-      TRI_DocumentReplication((TRI_document_collection_t*) primary, type, marker, oldData);
+      TRI_DocumentReplication(trx->_context->_vocbase, (TRI_document_collection_t*) primary, type, marker, oldData);
     }
 
   }

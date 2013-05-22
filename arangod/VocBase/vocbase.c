@@ -376,7 +376,7 @@ static bool UnregisterCollection (TRI_vocbase_t* vocbase, TRI_vocbase_col_t* col
 
   TRI_WRITE_UNLOCK_COLLECTIONS_VOCBASE(vocbase);
 
-  TRI_DropCollectionReplication(collection->_cid);
+  TRI_DropCollectionReplication(vocbase, collection->_cid);
 
   return true;
 }
@@ -1748,7 +1748,7 @@ TRI_vocbase_col_t* TRI_CreateCollectionVocBase (TRI_vocbase_t* vocbase,
 
   TRI_WRITE_UNLOCK_COLLECTIONS_VOCBASE(vocbase);
 
-  TRI_CreateCollectionReplication(cid, json);
+  TRI_CreateCollectionReplication(vocbase, cid, json);
   TRI_FreeJson(TRI_CORE_MEM_ZONE, json);
 
   return collection;
@@ -2055,7 +2055,7 @@ int TRI_RenameCollectionVocBase (TRI_vocbase_t* vocbase, TRI_vocbase_col_t* coll
   TRI_WRITE_UNLOCK_STATUS_VOCBASE_COL(collection);
   
   // TODO: protect this against unloading
-  TRI_RenameCollectionReplication(collection->_cid, newName);
+  TRI_RenameCollectionReplication(vocbase, collection->_cid, newName);
 
   return TRI_ERROR_NO_ERROR;
 }
