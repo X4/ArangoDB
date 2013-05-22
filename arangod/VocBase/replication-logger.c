@@ -600,6 +600,31 @@ static void DumpReplicationLogger (TRI_replication_logger_t* logger) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+/// @brief compare two logfiles, based on the logfile ids
+////////////////////////////////////////////////////////////////////////////////
+
+static int LogComparator (const void* lhs, const void* rhs) {
+  const replication_log_t* l = *((replication_log_t**) lhs);
+  const replication_log_t* r = *((replication_log_t**) rhs);
+
+  return (int) (l->_id - r->_id);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// @brief sort a vector of logsfiles
+////////////////////////////////////////////////////////////////////////////////
+
+static void SortLogsReplicationLogger (TRI_replication_logger_t* logger) {
+  TRI_vector_pointer_t* logs = &logger->_logs;
+  
+  if (logs->_length < 2) {
+    return;
+  }
+
+  qsort(logs->_buffer, logs->_length, sizeof(void*), LogComparator);
+}
+
+////////////////////////////////////////////////////////////////////////////////
 /// @brief add an existing log file to the vector of files
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -667,7 +692,7 @@ static int AddLogReplicationLogger (TRI_replication_logger_t* logger,
   
   LOG_DEBUG("adding replication log file '%s', size: %lld, sealed: %d, tickMin: %llu, tickMax: %llu", 
             absFilename,
-            (int64_t) l->_size,
+            (long long int) l->_size,
             (int) l->_sealed,
             (unsigned long long) l->_tickMin,
             (unsigned long long) l->_tickMax);
@@ -741,6 +766,7 @@ static int ScanPathReplicationLogger (TRI_replication_logger_t* logger) {
   // load the state of the replication system from a JSON file 
   json = LoadStateReplicationLogger(logger);
 
+  logs = NULL;
   if (json != NULL && json->_type == TRI_JSON_ARRAY) {
     // check "logs" attribute of JSON
     logs = TRI_LookupArrayJson(json, "logs");
@@ -884,6 +910,8 @@ TRI_replication_logger_t* TRI_CreateReplicationLogger (char const* path,
 
     return NULL;
   }
+
+  SortLogsReplicationLogger(logger);
 
   DumpReplicationLogger(logger);
 
