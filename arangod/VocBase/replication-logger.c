@@ -944,11 +944,11 @@ static int LogEvent (TRI_replication_logger_t* logger,
   // lock start
   // -----------------------------------------
   
-  TRI_LockMutex(&logger->_lock);
+  TRI_WriteLockReadWriteLock(&logger->_lock);
   l = GetLastLog(logger);
 
-  if (l == NULL) {
-    TRI_UnlockMutex(&logger->_lock);
+  if (l == NULL || l->_fd <= 0 || l->_flushed) {
+    TRI_WriteUnlockReadWriteLock(&logger->_lock);
     ReturnBuffer(logger, buffer);
 
     return TRI_ERROR_INTERNAL;
@@ -971,7 +971,7 @@ static int LogEvent (TRI_replication_logger_t* logger,
     }
   }
 
-  TRI_UnlockMutex(&logger->_lock);
+  TRI_WriteUnlockReadWriteLock(&logger->_lock);
   
   // lock end
   // -----------------------------------------
@@ -1024,7 +1024,7 @@ TRI_replication_logger_t* TRI_CreateReplicationLogger (TRI_replication_setup_t c
     return NULL;
   }
 
-  TRI_InitMutex(&logger->_lock);
+  TRI_InitReadWriteLock(&logger->_lock);
 
   logger->_setup._logSize       = setup->_logSize;
   logger->_setup._path          = TRI_DuplicateStringZ(TRI_CORE_MEM_ZONE, setup->_path);
@@ -1070,7 +1070,7 @@ void TRI_DestroyReplicationLogger (TRI_replication_logger_t* logger) {
   TRI_DestroyVectorPointer(&logger->_logs);
 
   TRI_FreeString(TRI_CORE_MEM_ZONE, logger->_setup._path);
-  TRI_DestroyMutex(&logger->_lock);
+  TRI_DestroyReadWriteLock(&logger->_lock);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1089,9 +1089,9 @@ void TRI_FreeReplicationLogger (TRI_replication_logger_t* logger) {
 int TRI_StartReplicationLogger (TRI_replication_logger_t* logger) {
   int res;
   
-  TRI_LockMutex(&logger->_lock);
+  TRI_WriteLockReadWriteLock(&logger->_lock);
   res = StartReplicationLogger(logger);
-  TRI_UnlockMutex(&logger->_lock);
+  TRI_WriteUnlockReadWriteLock(&logger->_lock);
 
   return res;
 }
@@ -1103,9 +1103,9 @@ int TRI_StartReplicationLogger (TRI_replication_logger_t* logger) {
 int TRI_StopReplicationLogger (TRI_replication_logger_t* logger) {
   int res;
   
-  TRI_LockMutex(&logger->_lock);
+  TRI_WriteLockReadWriteLock(&logger->_lock);
   res = StopReplicationLogger(logger);
-  TRI_UnlockMutex(&logger->_lock);
+  TRI_WriteUnlockReadWriteLock(&logger->_lock);
 
   return res;
 }
@@ -1497,6 +1497,9 @@ int TRI_TransactionReplication (TRI_vocbase_t* vocbase,
   assert(trx->_hasOperations);
 
   logger = vocbase->_replicationLogger;
+  if (! logger->_active) {
+    return TRI_ERROR_NO_ERROR;
+  }
 
   buffer = GetBuffer(logger);
   
@@ -1520,6 +1523,9 @@ int TRI_CreateCollectionReplication (TRI_vocbase_t* vocbase,
   TRI_replication_logger_t* logger;
 
   logger = vocbase->_replicationLogger;
+  if (! logger->_active) {
+    return TRI_ERROR_NO_ERROR;
+  }
   
   buffer = GetBuffer(logger);
 
@@ -1541,6 +1547,9 @@ int TRI_DropCollectionReplication (TRI_vocbase_t* vocbase,
   TRI_replication_logger_t* logger;
   
   logger = vocbase->_replicationLogger;
+  if (! logger->_active) {
+    return TRI_ERROR_NO_ERROR;
+  }
   
   buffer = GetBuffer(logger);
 
@@ -1563,6 +1572,9 @@ int TRI_RenameCollectionReplication (TRI_vocbase_t* vocbase,
   TRI_replication_logger_t* logger;
   
   logger = vocbase->_replicationLogger;
+  if (! logger->_active) {
+    return TRI_ERROR_NO_ERROR;
+  }
   
   buffer = GetBuffer(logger);
 
@@ -1585,6 +1597,9 @@ int TRI_ChangePropertiesCollectionReplication (TRI_vocbase_t* vocbase,
   TRI_replication_logger_t* logger;
   
   logger = vocbase->_replicationLogger;
+  if (! logger->_active) {
+    return TRI_ERROR_NO_ERROR;
+  }
   
   buffer = GetBuffer(logger);
 
@@ -1608,6 +1623,9 @@ int TRI_CreateIndexReplication (TRI_vocbase_t* vocbase,
   TRI_replication_logger_t* logger;
   
   logger = vocbase->_replicationLogger;
+  if (! logger->_active) {
+    return TRI_ERROR_NO_ERROR;
+  }
   
   buffer = GetBuffer(logger);
 
@@ -1630,6 +1648,9 @@ int TRI_DropIndexReplication (TRI_vocbase_t* vocbase,
   TRI_replication_logger_t* logger;
   
   logger = vocbase->_replicationLogger;
+  if (! logger->_active) {
+    return TRI_ERROR_NO_ERROR;
+  }
   
   buffer = GetBuffer(logger);
 
@@ -1655,6 +1676,9 @@ int TRI_DocumentReplication (TRI_vocbase_t* vocbase,
   TRI_replication_logger_t* logger;
 
   logger = vocbase->_replicationLogger;
+  if (! logger->_active) {
+    return TRI_ERROR_NO_ERROR;
+  }
 
   buffer = GetBuffer(logger);
 

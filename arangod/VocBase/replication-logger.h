@@ -30,6 +30,8 @@
 
 #include "BasicsC/common.h"
 
+#include "BasicsC/locks.h"
+
 #include "VocBase/document-collection.h"
 #include "VocBase/vocbase.h"
 #include "VocBase/voc-types.h"
@@ -119,7 +121,7 @@ TRI_replication_setup_t;
 ////////////////////////////////////////////////////////////////////////////////
 
 typedef struct TRI_replication_logger_s {
-  TRI_mutex_t              _lock;
+  TRI_read_write_lock_t    _lock;
   TRI_vector_pointer_t     _logs;
   TRI_replication_setup_t  _setup;
   bool                     _active;
