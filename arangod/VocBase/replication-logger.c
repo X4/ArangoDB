@@ -37,6 +37,9 @@
 #include "VocBase/collection.h"
 #include "VocBase/document-collection.h"
 
+
+#ifdef TRI_ENABLE_REPLICATION
+
 // -----------------------------------------------------------------------------
 // --SECTION--                                                       REPLICATION
 // -----------------------------------------------------------------------------
@@ -1035,8 +1038,6 @@ int TRI_StopReplicationLogger (TRI_replication_logger_t* logger) {
 /// @brief stringify the basics of any operation
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifdef TRI_ENABLE_REPLICATION
-
 static bool StringifyBasics (TRI_string_buffer_t* buffer,
                              const TRI_voc_tick_t tick,
                              char const* operationType) {
@@ -1053,13 +1054,9 @@ static bool StringifyBasics (TRI_string_buffer_t* buffer,
   return true;
 }
 
-#endif
-
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief stringify the id of a transaction
 ////////////////////////////////////////////////////////////////////////////////
-
-#ifdef TRI_ENABLE_REPLICATION
 
 static bool StringifyIdTransaction (TRI_string_buffer_t* buffer,
                                     const TRI_voc_tid_t tid) {
@@ -1074,13 +1071,9 @@ static bool StringifyIdTransaction (TRI_string_buffer_t* buffer,
   return true;
 }
 
-#endif
-
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief stringify the collections of a transaction
 ////////////////////////////////////////////////////////////////////////////////
-
-#ifdef TRI_ENABLE_REPLICATION
 
 static bool StringifyCollectionsTransaction (TRI_string_buffer_t* buffer,
                                              TRI_transaction_t const* trx) {
@@ -1124,13 +1117,9 @@ static bool StringifyCollectionsTransaction (TRI_string_buffer_t* buffer,
   return true;
 }
 
-#endif
-
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief stringify a "begin transaction" operation
 ////////////////////////////////////////////////////////////////////////////////
-
-#ifdef TRI_ENABLE_REPLICATION
 
 static bool StringifyBeginTransaction (TRI_string_buffer_t* buffer,
                                        TRI_voc_tick_t tick,
@@ -1152,13 +1141,9 @@ static bool StringifyBeginTransaction (TRI_string_buffer_t* buffer,
   return true;
 }
 
-#endif
-
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief stringify a "commit transaction" operation
 ////////////////////////////////////////////////////////////////////////////////
-
-#ifdef TRI_ENABLE_REPLICATION
 
 static bool StringifyCommitTransaction (TRI_string_buffer_t* buffer,
                                         TRI_voc_tick_t tick,
@@ -1176,13 +1161,9 @@ static bool StringifyCommitTransaction (TRI_string_buffer_t* buffer,
   return true;
 }
 
-#endif
-
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief stringify an index context
 ////////////////////////////////////////////////////////////////////////////////
-
-#ifdef TRI_ENABLE_REPLICATION
 
 static bool StringifyIndex (TRI_string_buffer_t* buffer,
                             const TRI_idx_iid_t iid) {
@@ -1197,13 +1178,9 @@ static bool StringifyIndex (TRI_string_buffer_t* buffer,
   return true;
 }
 
-#endif
-
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief stringify a collection context 
 ////////////////////////////////////////////////////////////////////////////////
-
-#ifdef TRI_ENABLE_REPLICATION
 
 static bool StringifyCollection (TRI_string_buffer_t* buffer,
                                  const TRI_voc_cid_t cid) {
@@ -1218,13 +1195,9 @@ static bool StringifyCollection (TRI_string_buffer_t* buffer,
   return true;
 }
 
-#endif
-
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief stringify a "create collection" operation
 ////////////////////////////////////////////////////////////////////////////////
-
-#ifdef TRI_ENABLE_REPLICATION
 
 static bool StringifyCreateCollection (TRI_string_buffer_t* buffer,
                                        TRI_voc_tick_t tick,
@@ -1241,13 +1214,9 @@ static bool StringifyCreateCollection (TRI_string_buffer_t* buffer,
   return true;
 }
 
-#endif
-
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief stringify a "drop collection" operation
 ////////////////////////////////////////////////////////////////////////////////
-
-#ifdef TRI_ENABLE_REPLICATION
 
 static bool StringifyDropCollection (TRI_string_buffer_t* buffer,
                                      TRI_voc_tick_t tick,
@@ -1265,13 +1234,9 @@ static bool StringifyDropCollection (TRI_string_buffer_t* buffer,
   return true;
 }
 
-#endif
-
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief stringify a "rename collection" operation
 ////////////////////////////////////////////////////////////////////////////////
-
-#ifdef TRI_ENABLE_REPLICATION
 
 static bool StringifyRenameCollection (TRI_string_buffer_t* buffer,
                                        TRI_voc_tick_t tick,
@@ -1293,13 +1258,9 @@ static bool StringifyRenameCollection (TRI_string_buffer_t* buffer,
   return true;
 }
 
-#endif
-
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief stringify a "create index" operation
 ////////////////////////////////////////////////////////////////////////////////
-
-#ifdef TRI_ENABLE_REPLICATION
 
 static bool StringifyCreateIndex (TRI_string_buffer_t* buffer,
                                   TRI_voc_tick_t tick,
@@ -1321,13 +1282,9 @@ static bool StringifyCreateIndex (TRI_string_buffer_t* buffer,
   return true;
 }
 
-#endif
-
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief stringify a "drop index" operation
 ////////////////////////////////////////////////////////////////////////////////
-
-#ifdef TRI_ENABLE_REPLICATION
 
 static bool StringifyDropIndex (TRI_string_buffer_t* buffer,
                                 TRI_voc_tick_t tick,
@@ -1352,13 +1309,9 @@ static bool StringifyDropIndex (TRI_string_buffer_t* buffer,
   return true;
 }
 
-#endif
-
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief stringify a document operation
 ////////////////////////////////////////////////////////////////////////////////
-
-#ifdef TRI_ENABLE_REPLICATION
 
 static bool StringifyDocumentOperation (TRI_string_buffer_t* buffer,
                                         TRI_document_collection_t* document,
@@ -1469,8 +1422,6 @@ static bool StringifyDocumentOperation (TRI_string_buffer_t* buffer,
   return true;
 }
 
-#endif
-
 ////////////////////////////////////////////////////////////////////////////////
 /// @}
 ////////////////////////////////////////////////////////////////////////////////
@@ -1487,8 +1438,6 @@ static bool StringifyDocumentOperation (TRI_string_buffer_t* buffer,
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief replicate a transaction
 ////////////////////////////////////////////////////////////////////////////////
-
-#ifdef TRI_ENABLE_REPLICATION
 
 int TRI_TransactionReplication (TRI_vocbase_t* vocbase,
                                 TRI_transaction_t const* trx) {
@@ -1548,13 +1497,9 @@ int TRI_TransactionReplication (TRI_vocbase_t* vocbase,
   return LogEvent(NULL, buffer);
 }
 
-#endif
-
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief replicate a "create collection" operation
 ////////////////////////////////////////////////////////////////////////////////
-
-#ifdef TRI_ENABLE_REPLICATION
 
 int TRI_CreateCollectionReplication (TRI_vocbase_t* vocbase,
                                      TRI_voc_cid_t cid,
@@ -1574,13 +1519,9 @@ int TRI_CreateCollectionReplication (TRI_vocbase_t* vocbase,
   return LogEvent(logger, buffer);
 }
 
-#endif
-
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief replicate a "drop collection" operation
 ////////////////////////////////////////////////////////////////////////////////
-
-#ifdef TRI_ENABLE_REPLICATION
 
 int TRI_DropCollectionReplication (TRI_vocbase_t* vocbase,
                                    TRI_voc_cid_t cid) {
@@ -1599,13 +1540,9 @@ int TRI_DropCollectionReplication (TRI_vocbase_t* vocbase,
   return LogEvent(logger, buffer);
 }
 
-#endif
-
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief replicate a "rename collection" operation
 ////////////////////////////////////////////////////////////////////////////////
-
-#ifdef TRI_ENABLE_REPLICATION
 
 int TRI_RenameCollectionReplication (TRI_vocbase_t* vocbase,
                                      TRI_voc_cid_t cid,
@@ -1625,13 +1562,9 @@ int TRI_RenameCollectionReplication (TRI_vocbase_t* vocbase,
   return LogEvent(logger, buffer);
 }
 
-#endif
-
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief replicate a "change collection properties" operation
 ////////////////////////////////////////////////////////////////////////////////
-
-#ifdef TRI_ENABLE_REPLICATION
 
 int TRI_ChangePropertiesCollectionReplication (TRI_vocbase_t* vocbase,
                                                TRI_voc_cid_t cid,
@@ -1651,13 +1584,9 @@ int TRI_ChangePropertiesCollectionReplication (TRI_vocbase_t* vocbase,
   return LogEvent(logger, buffer);
 }
 
-#endif
-
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief replicate a "create index" operation
 ////////////////////////////////////////////////////////////////////////////////
-
-#ifdef TRI_ENABLE_REPLICATION
 
 int TRI_CreateIndexReplication (TRI_vocbase_t* vocbase,
                                 TRI_voc_cid_t cid,
@@ -1678,13 +1607,9 @@ int TRI_CreateIndexReplication (TRI_vocbase_t* vocbase,
   return LogEvent(logger, buffer);
 }
 
-#endif
-
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief replicate a "drop index" operation
 ////////////////////////////////////////////////////////////////////////////////
-
-#ifdef TRI_ENABLE_REPLICATION
 
 int TRI_DropIndexReplication (TRI_vocbase_t* vocbase,
                               TRI_voc_cid_t cid,
@@ -1704,13 +1629,9 @@ int TRI_DropIndexReplication (TRI_vocbase_t* vocbase,
   return LogEvent(logger, buffer);
 }
 
-#endif
-
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief replicate a document operation
 ////////////////////////////////////////////////////////////////////////////////
-
-#ifdef TRI_ENABLE_REPLICATION
 
 int TRI_DocumentReplication (TRI_vocbase_t* vocbase,
                              TRI_document_collection_t* document,
@@ -1732,11 +1653,11 @@ int TRI_DocumentReplication (TRI_vocbase_t* vocbase,
   return LogEvent(logger, buffer);
 }
 
-#endif
-
 ////////////////////////////////////////////////////////////////////////////////
 /// @}
 ////////////////////////////////////////////////////////////////////////////////
+
+#endif
 
 // Local Variables:
 // mode: outline-minor

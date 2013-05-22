@@ -149,7 +149,7 @@ int TRI_TransactionReplication (struct TRI_vocbase_s*,
 
 #else
 
-#define TRI_TransactionReplication(p1)
+#define TRI_TransactionReplication(...)
 
 #endif
 
@@ -165,7 +165,7 @@ int TRI_CreateCollectionReplication (struct TRI_vocbase_s*,
 
 #else
 
-#define TRI_CreateCollectionReplication(p1, p2)
+#define TRI_CreateCollectionReplication(...)
 
 #endif
 
@@ -180,7 +180,7 @@ int TRI_DropCollectionReplication (struct TRI_vocbase_s*,
 
 #else
 
-#define TRI_DropCollectionReplication(p1)
+#define TRI_DropCollectionReplication(...)
 
 #endif
 
@@ -196,7 +196,7 @@ int TRI_RenameCollectionReplication (struct TRI_vocbase_s*,
 
 #else
 
-#define TRI_RenameCollectionReplication(p1, p2)
+#define TRI_RenameCollectionReplication(...)
 
 #endif
 
@@ -212,7 +212,7 @@ int TRI_ChangePropertiesCollectionReplication (struct TRI_vocbase_s*,
 
 #else
 
-#define TRI_ChangePropertiesCollectionReplication(p1, p2)
+#define TRI_ChangePropertiesCollectionReplication(...)
 
 #endif
 
@@ -229,7 +229,7 @@ int TRI_CreateIndexReplication (struct TRI_vocbase_s*,
 
 #else
 
-#define TRI_CreateIndexReplication(p1, p2, p3)
+#define TRI_CreateIndexReplication(...)
 
 #endif
 
@@ -245,7 +245,7 @@ int TRI_DropIndexReplication (struct TRI_vocbase_s*,
 
 #else
 
-#define TRI_DropIndexReplication(p1, p2)
+#define TRI_DropIndexReplication(...)
 
 #endif
 
@@ -263,7 +263,7 @@ int TRI_DocumentReplication (struct TRI_vocbase_s*,
 
 #else
 
-#define TRI_DocumentReplication(p1, p2, p3, p4)
+#define TRI_DocumentReplication(...)
 
 #endif
 
