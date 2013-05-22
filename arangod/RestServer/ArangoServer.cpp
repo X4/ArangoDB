@@ -185,7 +185,6 @@ ArangoServer::ArangoServer (int argc, char** argv)
     _databasePath(),
     _removeOnDrop(true),
     _removeOnCompacted(true),
-    _replicationPort(8528),
     _defaultMaximalSize(TRI_JOURNAL_DEFAULT_MAXIMAL_SIZE),
     _defaultWaitForSync(false),
     _forceSyncShapes(true),
@@ -388,15 +387,6 @@ void ArangoServer::buildApplicationServer () {
   ;
   
   
-  // .............................................................................
-  // replication
-  // .............................................................................
-
-  additional[ApplicationServer::OPTIONS_REPLICATION]
-    ("replication.port", &_replicationPort, "port to run replication on")
-  ;
-
-
   // .............................................................................
   // endpoint server
   // .............................................................................
