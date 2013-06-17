@@ -27,7 +27,8 @@
 
 #include "RestReplicationHandler.h"
 
-#include "Basics/FileUtils.h"
+#include "build.h"
+#include "BasicsC/conversions.h"
 #include "BasicsC/files.h"
 #include "Logger/Logger.h"
 #include "HttpServer/HttpServer.h"
@@ -107,9 +108,199 @@ Handler::status_e RestReplicationHandler::execute() {
 
     return Handler::HANDLER_DONE;
   }
+  
+  const size_t len = _request->suffix().size();
+  if (len != 1) {
+    generateError(HttpResponse::BAD,
+                  TRI_ERROR_HTTP_SUPERFLUOUS_SUFFICES,
+                  "expecting POST /_api/replication/<command>");
+    return Handler::HANDLER_DONE;
+  }
+  
+  vector<string> const& suffix = _request->suffix();
+  const string& command = suffix[0];
+
+  bool foundCollection;
+  char const* collection = _request->value("collection", foundCollection);
+
+  if (command == "dump-initial-start") {
+    handleInitialDumpStart();
+  }
+  else if (command == "dump-initial-collection" && foundCollection) {
+    handleInitialDumpCollection(collection);
+  }
+  else if (command == "dump-initial-end") {
+    handleInitialDumpEnd();
+  }
+  else if (command == "dump-continuous") {
+    handleContinuousDump();
+  }
+  else {
+    generateError(HttpResponse::BAD,
+                  TRI_ERROR_HTTP_SUPERFLUOUS_SUFFICES,
+                  "expecting POST /_api/replication/<command>");
+    return Handler::HANDLER_DONE;
+  }
 
   // success
   return Handler::HANDLER_DONE;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// @brief whether or not to include a collection in replication
+////////////////////////////////////////////////////////////////////////////////
+    
+bool RestReplicationHandler::shouldIncludeCollection (const char* name) {
+  // TODO: exclude certain collections from replication
+  return true; 
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// @brief dump a part of a collection
+////////////////////////////////////////////////////////////////////////////////
+
+int RestReplicationHandler::dumpCollection (TRI_voc_cid_t cid,
+                                            TRI_voc_tick_t tickStart,
+                                            TRI_voc_tick_t tickEnd,
+                                            uint64_t chunkSize) {
+  return TRI_ERROR_NO_ERROR;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// @brief handle replication initialisation
+////////////////////////////////////////////////////////////////////////////////
+
+bool RestReplicationHandler::handleInitialDumpStart () {
+  TRI_voc_tick_t tick = TRI_CurrentTickVocBase();
+
+  // TODO: activate replication log here
+
+  TRI_json_t result;
+  TRI_InitArrayJson(TRI_CORE_MEM_ZONE, &result);
+  
+
+  // collections
+  TRI_vector_pointer_t colls = TRI_CollectionsVocBase(_vocbase);
+  const size_t n = colls._length;
+  TRI_json_t* collections = TRI_CreateList2Json(TRI_CORE_MEM_ZONE, n);
+
+  for (size_t i = 0;  i < n;  ++i) {
+    TRI_vocbase_col_t const* c = (TRI_vocbase_col_t const*) colls._buffer[i];
+
+    if (! shouldIncludeCollection(c->_name)) {
+      continue;
+    }
+    
+    TRI_json_t* name = TRI_CreateStringCopyJson(TRI_CORE_MEM_ZONE, c->_name);
+    TRI_json_t* cid  = TRI_CreateStringJson(TRI_CORE_MEM_ZONE, TRI_StringUInt64((uint64_t) c->_cid));
+
+    TRI_json_t* collection = TRI_CreateArrayJson(TRI_CORE_MEM_ZONE);
+    TRI_Insert3ArrayJson(TRI_CORE_MEM_ZONE, collection, "name", name);
+    TRI_Insert3ArrayJson(TRI_CORE_MEM_ZONE, collection, "cid", cid);
+
+    TRI_PushBack3ListJson(TRI_CORE_MEM_ZONE, collections, collection);
+  }
+  
+  TRI_DestroyVectorPointer(&colls);
+
+  // server data  
+  TRI_json_t* server = TRI_CreateArrayJson(TRI_CORE_MEM_ZONE);
+  TRI_Insert3ArrayJson(TRI_CORE_MEM_ZONE, server, "version", TRI_CreateStringCopyJson(TRI_CORE_MEM_ZONE, TRIAGENS_VERSION));
+  
+  // put it all together 
+  TRI_Insert3ArrayJson(TRI_CORE_MEM_ZONE, &result, "tick", TRI_CreateStringJson(TRI_CORE_MEM_ZONE, TRI_StringUInt64((uint64_t) tick)));
+  TRI_Insert3ArrayJson(TRI_CORE_MEM_ZONE, &result, "server", server);
+  TRI_Insert3ArrayJson(TRI_CORE_MEM_ZONE, &result, "collections", collections);
+
+  generateResult(&result);
+
+  TRI_DestroyJson(TRI_CORE_MEM_ZONE, &result);
+
+  return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// @brief handle dump of a single collection
+////////////////////////////////////////////////////////////////////////////////
+
+bool RestReplicationHandler::handleInitialDumpCollection (const char* collection) {
+  static const uint64_t minChunkSize = 1 * 1024 * 1024;
+  
+  assert(collection != 0);
+    
+  if (! shouldIncludeCollection(collection)) {
+    generateError(HttpResponse::BAD,
+                  TRI_ERROR_HTTP_BAD_PARAMETER,
+                  "invalid collection");
+    return false;
+  }
+
+  // determine start tick for dump
+  TRI_voc_tick_t tickStart = 0;
+  TRI_voc_tick_t tickEnd   = 0;
+  bool found;
+  char const* value;
+
+  value = _request->value("from", found);
+  if (found) {
+    tickStart = (TRI_voc_tick_t) StringUtils::uint64(value);
+  }
+
+  // determine end tick for dump
+  value = _request->value("to", found);
+  if (found) {
+    tickEnd = (TRI_voc_tick_t) StringUtils::uint64(value);
+  }
+
+  if (tickStart > tickEnd || tickEnd == 0) {
+    generateError(HttpResponse::BAD,
+                  TRI_ERROR_HTTP_BAD_PARAMETER,
+                  "invalid from/to values");
+    return false;
+  }
+
+  // determine chunk size
+  uint64_t chunkSize = minChunkSize;
+
+  value = _request->value("chunkSize", found);
+  if (found) {
+    chunkSize = (uint64_t) StringUtils::uint64(value);
+  }
+  if (chunkSize < minChunkSize) {
+    chunkSize = minChunkSize;
+  }
+
+  LOGGER_DEBUG("request collection dump for collection " << collection << 
+               ", tickStart: " << tickStart << ", tickEnd: " << tickEnd);
+
+  TRI_vocbase_col_t* col = TRI_UseCollectionByNameVocBase(_vocbase, collection);
+  if (col == 0) {
+    generateError(HttpResponse::BAD,
+                  TRI_ERROR_HTTP_BAD_PARAMETER,
+                  "invalid collection");
+    return false;
+  }
+
+  dumpCollection(col->_cid, tickStart, tickEnd, chunkSize);
+  TRI_ReleaseCollectionVocBase(_vocbase, col);
+
+  return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// @brief handle end of initial dump
+////////////////////////////////////////////////////////////////////////////////
+
+bool RestReplicationHandler::handleInitialDumpEnd () {
+  return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// @brief continuous streaming of replication log
+////////////////////////////////////////////////////////////////////////////////
+
+bool RestReplicationHandler::handleContinuousDump () {
+  return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
