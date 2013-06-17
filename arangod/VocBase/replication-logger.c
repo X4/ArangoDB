@@ -686,7 +686,7 @@ static int LogComparator (const void* lhs, const void* rhs) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/// @brief sort a vector of logsfiles, using their ids
+/// @brief sort a vector of logfiles, using their ids
 ////////////////////////////////////////////////////////////////////////////////
 
 static void SortLogsReplicationLogger (TRI_replication_logger_t* logger) {
@@ -822,6 +822,7 @@ static int ScanPathReplicationLogger (TRI_replication_logger_t* logger) {
   regex_t re;
   TRI_json_t* json;
   TRI_json_t* logs;
+  char* filename;
   size_t i, n;
   int res;
   
@@ -830,6 +831,21 @@ static int ScanPathReplicationLogger (TRI_replication_logger_t* logger) {
   }
   
   LOG_DEBUG("investigating previous replication state");
+  
+  // check if tmp file exists
+  filename = TRI_Concatenate2File(logger->_setup._path, "replication.json.tmp");
+
+  if (filename == NULL) {
+    return TRI_ERROR_OUT_OF_MEMORY;
+  }
+  
+  // if yes, remove it
+  if (TRI_ExistsFile(filename)) {
+    LOG_DEBUG("removing dangling replication state file '%s'", filename);
+    TRI_UnlinkFile(filename);
+  }
+  TRI_FreeString(TRI_CORE_MEM_ZONE, filename);
+
 
   // load the state of the replication system from a JSON file 
   json = LoadStateReplicationLogger(logger);
@@ -925,7 +941,7 @@ static int LogEvent (TRI_replication_logger_t* logger,
 
   assert(logger != NULL);
   assert(buffer != NULL);
-              
+
   len = TRI_LengthStringBuffer(buffer);
 
   if (len < 1) {
@@ -947,7 +963,7 @@ static int LogEvent (TRI_replication_logger_t* logger,
   TRI_WriteLockReadWriteLock(&logger->_lock);
   l = GetLastLog(logger);
 
-  if (l == NULL || l->_fd <= 0 || l->_flushed) {
+  if (l == NULL || l->_fd <= 0 || l->_sealed) {
     TRI_WriteUnlockReadWriteLock(&logger->_lock);
     ReturnBuffer(logger, buffer);
 
@@ -1476,7 +1492,7 @@ static bool StringifyTransaction (TRI_string_buffer_t* buffer,
 ////////////////////////////////////////////////////////////////////////////////
 
 // -----------------------------------------------------------------------------
-// --SECTION--                                                  public functions
+// --SECTION--                                              public log functions
 // -----------------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1531,6 +1547,7 @@ int TRI_CreateCollectionReplication (TRI_vocbase_t* vocbase,
 
   if (! StringifyCreateCollection(buffer, OPERATION_COLLECTION_CREATE, json)) {
     ReturnBuffer(logger, buffer);
+
     return TRI_ERROR_OUT_OF_MEMORY;
   }
 
@@ -1555,6 +1572,7 @@ int TRI_DropCollectionReplication (TRI_vocbase_t* vocbase,
 
   if (! StringifyDropCollection(buffer, cid)) {
     ReturnBuffer(logger, buffer);
+
     return TRI_ERROR_OUT_OF_MEMORY;
   }
 
@@ -1580,6 +1598,7 @@ int TRI_RenameCollectionReplication (TRI_vocbase_t* vocbase,
 
   if (! StringifyRenameCollection(buffer, cid, name)) {
     ReturnBuffer(logger, buffer);
+
     return TRI_ERROR_OUT_OF_MEMORY;
   }
 
@@ -1605,6 +1624,7 @@ int TRI_ChangePropertiesCollectionReplication (TRI_vocbase_t* vocbase,
 
   if (! StringifyCreateCollection(buffer, OPERATION_COLLECTION_CHANGE, json)) {
     ReturnBuffer(logger, buffer);
+
     return TRI_ERROR_OUT_OF_MEMORY;
   }
 
@@ -1631,6 +1651,7 @@ int TRI_CreateIndexReplication (TRI_vocbase_t* vocbase,
 
   if (! StringifyCreateIndex(buffer, cid, json)) {
     ReturnBuffer(logger, buffer);
+
     return TRI_ERROR_OUT_OF_MEMORY;
   }
 
@@ -1691,6 +1712,33 @@ int TRI_DocumentReplication (TRI_vocbase_t* vocbase,
   return LogEvent(logger, buffer);
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// @}
+////////////////////////////////////////////////////////////////////////////////
+
+// -----------------------------------------------------------------------------
+// --SECTION--                                                    dump functions
+// -----------------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////////////
+/// @addtogroup VocBase
+/// @{
+////////////////////////////////////////////////////////////////////////////////
+
+// /_api/replication/dump-start: 
+// - keep track of current tick, activate replication log, set flag to keep replication logs infinitely
+// - return list of all collections plus current tick
+// for each collection in result:
+//   /_api/replication/dump-collection?collection=abc&last=0 // create a barrier // ... dump ... // drop barrier
+// return all data + "hasMore" attribute
+//   /_api/replication/dump-collection?collection=abc&last=9999
+// until no more data for a collection
+// after that:
+//   /_api/replication/dump-end: to remove any barriers etc.
+//   /_api/replication/dump-continuous?last=... to access the stream of replication events... server-push
+// clients needs to note last xfered tick
+
+// client: replication.endpoint. establish connection and query data incrementally
 ////////////////////////////////////////////////////////////////////////////////
 /// @}
 ////////////////////////////////////////////////////////////////////////////////

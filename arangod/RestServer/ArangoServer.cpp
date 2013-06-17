@@ -67,6 +67,7 @@
 #include "RestHandler/RestDocumentHandler.h"
 #include "RestHandler/RestEdgeHandler.h"
 #include "RestHandler/RestImportHandler.h"
+#include "RestHandler/RestReplicationHandler.h"
 #include "RestHandler/RestUploadHandler.h"
 #include "Scheduler/ApplicationScheduler.h"
 #include "Statistics/statistics.h"
@@ -124,6 +125,11 @@ static void DefineApiHandlers (HttpHandlerFactory* factory,
   // add import handler
   factory->addPrefixHandler(RestVocbaseBaseHandler::DOCUMENT_IMPORT_PATH,
                             RestHandlerCreator<RestImportHandler>::createData<TRI_vocbase_t*>,
+                            vocbase);
+  
+  // add replication handler
+  factory->addPrefixHandler(RestVocbaseBaseHandler::REPLICATION_PATH,
+                            RestHandlerCreator<RestReplicationHandler>::createData<TRI_vocbase_t*>,
                             vocbase);
 
   // add batch handler
