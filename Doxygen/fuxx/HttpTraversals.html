@@ -1,0 +1,3057 @@
+<!DOCTYPE html>
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+
+<link rel="shortcut icon" type="image/x-icon" href="http://www.arangodb.org/wp-content/themes/triagens/images/favicon.ico">
+
+<link rel="profile" href="http://gmpg.org/xfn/11" />
+<link rel="stylesheet" type="text/css" media="all" href="http://www.arangodb.org/wp-content/themes/triagens-child/style.css" />
+<link rel="pingback" href="" />
+
+
+<!-- This site is optimized with the Yoast WordPress SEO plugin v1.4.4 - http://yoast.com/wordpress/seo/ -->
+<title>ArangoDB Manual Pages - ArangoDB</title>
+<meta name="description" content="ArangoDB Manual Pages"/>
+<link rel="canonical" href="http://www.arangodb.org/manualredirector" />
+<meta property='og:locale' content='en_US'/>
+<meta property='og:title' content='ArangoDB Manual Pages - ArangoDB'/>
+<meta property='og:description' content='ArangoDB Manual Pages'/>
+<meta property='og:url' content='http://www.arangodb.org/manualredirector'/>
+<meta property='og:site_name' content='ArangoDB'/>
+<meta property='og:type' content='article'/>
+<!-- / Yoast WordPress SEO plugin. -->
+
+<link rel="alternate" type="application/rss+xml" title="ArangoDB &raquo; Feed" href="http://www.arangodb.org/feed" />
+<link rel="alternate" type="application/rss+xml" title="ArangoDB &raquo; Comments Feed" href="http://www.arangodb.org/comments/feed" />
+<link rel='stylesheet' id='wordpress-popular-posts-css'  href='http://www.arangodb.org/wp-content/plugins/wordpress-popular-posts/style/wpp.css?ver=3.5.1' type='text/css' media='all' />
+<link rel='stylesheet' id='wp-syntax-css-css'  href='http://www.arangodb.org/wp-content/plugins/wp-syntax/css/wp-syntax.css?ver=1.0' type='text/css' media='all' />
+<script type='text/javascript' src='http://www.arangodb.org/wp-includes/js/jquery/jquery.js?ver=1.8.3'></script>
+<script type='text/javascript' src='http://www.arangodb.org/wp-includes/js/comment-reply.min.js?ver=3.5.1'></script>
+
+    <style type="text/css">
+    body {
+    margin-top: -28px;
+    padding-bottom: 28px;
+    }
+    body.admin-bar #wphead {
+       padding-top: 0;
+    }
+    body.admin-bar #footer {
+       padding-bottom: 28px;
+    }
+<link type="text/css" media="screen" rel="stylesheet" href="http://www.arangodb.org/wp-content/plugins/tweet-blender/css/tweets.css" />
+
+    <style media="print" type="text/css">
+      div.faq_answer {display: block!important;}
+      p.faq_nav {display: none;}
+    </style>
+
+
+</head>
+
+<body class="page page-id-1410 page-template page-template-onecolumn-page-php">
+
+    <div id="access" role="navigation">
+        <div id="nav">
+            <a href="http://www.arangodb.org/" title="ArangoDB" id="branding"><img src="/wp-content/themes/triagens/images/logo_arangob_white.gif" width="154" height="34" alt="ArangoDB"></a>
+            <div class="menu-header"><ul id="menu-home" class="menu"><li id="menu-item-184" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-184"><a href="http://www.arangodb.org/">Home</a></li>
+<li id="menu-item-1345" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1345"><a href="http://www.arangodb.org/try">Try it out</a></li>
+<li id="menu-item-279" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-279"><a href="http://www.arangodb.org/documentation">Documentation</a></li>
+<li id="menu-item-95" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-95"><a href="http://www.arangodb.org/roadmap">Roadmap</a></li>
+<li id="menu-item-71" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-71"><a href="http://www.arangodb.org/download">Downloads</a></li>
+<li id="menu-item-1299" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1299"><a href="http://www.arangodb.org/api">Drivers</a></li>
+<li id="menu-item-156" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-156"><a href="http://www.arangodb.org/blog">Blog</a></li>
+</ul></div>            <div class="clear_both"></div>
+        </div>
+    </div><!-- #access -->
+
+  <div id="surrounding">
+
+    <div id="wrapper" class="hfeed">
+	<div id="main">
+
+    <div id="fullsize" class="one-column">
+      <div id="content" role="main">
+
+
+
+            <div id="post-1410" class="post-1410 page type-page status-publish hentry">
+                    <h2 class="entry-title">ArangoDB Manual Pages</h2>
+
+	  <div class="entry-content">
+
+<link id="arangodb.css" type="text/css" href="arangodb.css" rel="stylesheet">
+</div>
+<div id="manual_search">
+<form action="/" id="searchform" method="get" role="search">
+  <div><label for="s" class="screen-reader-text">Search for:</label>
+    <input type="text" id="s" name="s" value="" />
+    <input type="submit" value="Search" id="searchsubmit" />
+  </div>
+</form>
+</div>
+<div class="clear_both"></div>
+<hr />
+<div class="arangodb">
+<div>
+<!-- Generated by Doxygen 1.8.2 -->
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle">
+<div class="title">HTTP Interface for Traversals </div>  </div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"> <div class="navigate"><a href="HttpGraph.html">prev</a> | <a href="ImplementorManual.html">home</a> | <a href="HttpImport.html">next</a></div>  <div class="toc"><ul>
+<li><a class="el" href="HttpTraversals.html">HTTP Interface for Traversals</a><ul>
+<li><a class="el" href="HttpTraversals.html#HttpTraversalsIntro">Traverals </a></li>
+<li><a class="el" href="HttpTraversals.html#HttpTraversalsHttp">Executing Traversals via HTTP </a><ul>
+<li><a class="el" href="HttpTraversals.html#HttpTraversalsPost">POST /_api/traversal</a> </li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+  </div> <h2><a class="anchor" id="HttpTraversalsIntro"></a>
+Traverals </h2>
+<p>ArangoDB's graph traversals are executed on the server. Traversals can be initiated by clients by sending the traversal description for execution to the server.</p>
+<p>Traversals in ArangoDB are used to walk over a graph stored in one edge collection. It can easily be described which edges of the graph should be followed and which actions should be performed on each visited vertex. Furthermore the ordering of visiting the nodes can be specified, for instance depth-first or breadth-first search are offered.</p>
+<h2><a class="anchor" id="HttpTraversalsHttp"></a>
+Executing Traversals via HTTP </h2>
+<p><a class="anchor" id="HttpTraversalsPost"></a> </p><div class="restheader">POST /_api/traversal<div class="restheaderremark">(executes a traversal)</div></div> <H3>Body parameters</H3><div class="restbodyparam">body (string,required)</div> <H3 class="space-before">Description</H3> Starts a traversal starting from a given vertex and following. edges contained in a given edgeCollection. The request must contain the following attributes.<ul>
+<li><code>startVertex</code>: id of the startVertex, e.g. <code>"users/foo"</code>.</li>
+</ul>
+<ul>
+<li><code>edgeCollection</code>: name of the collection that contains the edges.</li>
+</ul>
+<ul>
+<li><code>filter</code> (optional, default is to include all nodes): body (JavaScript code) of custom filter function function signature: (config, vertex, path) -&gt; mixed can return four different string values:<ul>
+<li><code>"exclude"</code> -&gt; this vertex will not be visited.</li>
+<li><code>"prune"</code> -&gt; the edges of this vertex will not be followed.</li>
+<li><code>""</code> or <code>undefined</code> -&gt; visit the vertex and follow it's edges.</li>
+<li><code>Array</code> -&gt; containing any combination of the above. If there is at least one <code>"exclude"</code> or <code>"prune"</code> respectivly is contained, it's effect will occur.</li>
+</ul>
+</li>
+<li><code>minDepth</code> (optional, ANDed with any existing filters): visits only nodes in at least the given depth</li>
+<li><code>maxDepth</code> (optional, ANDed with any existing filters): visits only nodes in at most the given depth</li>
+<li><code>visitor</code> (optional): body (JavaScript) code of custom visitor function function signature: (config, result, vertex, path) -&gt; void visitor function can do anything, but its return value is ignored. To populate a result, use the <code>result</code> variable by reference</li>
+<li><code>direction</code> (optional): direction for traversal<ul>
+<li><em>if set</em>, must be either <code>"outbound"</code>, <code>"inbound"</code>, or <code>"any"</code></li>
+<li><em>if not set</em>, the <code>expander</code> attribute must be specified</li>
+</ul>
+</li>
+<li><code>init</code> (optional): body (JavaScript) code of custom result initialisation function function signature: (config, result) -&gt; void initialise any values in result with what is required</li>
+<li><code>expander</code> (optional): body (JavaScript) code of custom expander function <em>must</em> be set if <code>direction</code> attribute is <em>not</em> set function signature: (config, vertex, path) -&gt; array expander must return an array of the connections for <code>vertex</code> each connection is an object with the attributes <code>edge</code> and <code>vertex</code></li>
+<li><code>strategy</code> (optional): traversal strategy can be <code>"depthfirst"</code> or <code>"breadthfirst"</code></li>
+<li><code>order</code> (optional): traversal order can be <code>"preorder"</code> or <code>"postorder"</code></li>
+<li><code>itemOrder</code> (optional): item iteration order can be <code>"forward"</code> or <code>"backward"</code></li>
+<li><code>uniqueness</code> (optional): specifies uniqueness for vertices and edges visited if set, must be an object like this: <code>"uniqueness": {"vertices": "none"|"global"|path", "edges": "none"|"global"|"path"}</code></li>
+<li><code>maxIterations</code> (optional): Maximum number of iterations in each traversal. This number can be set to prevent endless loops in traversal of cyclic graphs. When a traversal performs as many iterations as the <code>maxIterations</code> value, the traversal will abort with an error. If <code>maxIterations</code> is not set, a server-defined value may be used.</li>
+</ul>
+If the Traversal is successfully executed <code>HTTP 200</code> will be returned. Additionally the <code>result</code> object will be returned by the traversal.For successful traversals, the returned JSON object has the following properties:<ul>
+<li><code>error</code>: boolean flag to indicate if an error occurred (<code>false</code> in this case)</li>
+</ul>
+<ul>
+<li><code>code</code>: the HTTP status code</li>
+</ul>
+<ul>
+<li><code>result</code>: the return value of the traversal</li>
+</ul>
+If the traversal specification is either missing or malformed, the server will respond with <code>HTTP 400</code>.The body of the response will then contain a JSON object with additional error details. The object has the following attributes:<ul>
+<li><code>error</code>: boolean flag to indicate that an error occurred (<code>true</code> in this case)</li>
+</ul>
+<ul>
+<li><code>code</code>: the HTTP status code</li>
+</ul>
+<ul>
+<li><code>errorNum</code>: the server error number</li>
+</ul>
+<ul>
+<li><code>errorMessage</code>: a descriptive error message</li>
+</ul>
+ <H3>Return codes</H3> <p></p><div class="restreturncode">HTTP 200</div> If the traversal is fully executed <code>HTTP 200</code> will be returned. <p></p><div class="restreturncode">HTTP 400</div> If the traversal specification is either missing or malformed, the server will respond with <code>HTTP 400</code>. <p></p><div class="restreturncode">HTTP 404</div> The server will responded with <code>HTTP 404</code> if the specified edge collection does not exist, or the specified start vertex cannot be found. <p></p><div class="restreturncode">HTTP 500</div> The server will responded with <code>HTTP 500</code> when an error occurs inside the traversal or if a traversal performs more than <code>maxIterations</code> iterations. <H3>Examples</H3>In the following examples the underlying graph will contain five persons <code>Alice</code>, <code>Bob</code>, <code>Charlie</code>, <code>Dave</code> and <code>Eve</code>. We will have the following directed relations:</p>
+<ul>
+<li><code>Alice</code> knows <code>Bob</code></li>
+<li><code>Bob</code> knows <code>Charlie</code></li>
+<li><code>Bob</code> knows <code>Dave</code></li>
+<li><code>Eve</code> knows <code>Alice</code></li>
+<li><code>Eve</code> knows <code>Bob</code></li>
+</ul>
+The starting vertex will always be Alice.Follow only outbound edges:<pre class="fragment">unix&gt; curl -X POST --data @- --dump - http://localhost:8529/_api/traversal
+{ "startVertex": "persons/215245969", "edgeCollection" : "knows", "direction" : "outbound"}
+
+HTTP/1.1 200 OK
+content-type: application/json; charset=utf-8
+
+{ 
+  "result" : { 
+    "visited" : { 
+      "vertices" : [ 
+        { 
+          "_id" : "persons/215245969", 
+          "_rev" : "215245969", 
+          "_key" : "215245969", 
+          "name" : "Alice" 
+        }, 
+        { 
+          "_id" : "persons/215508113", 
+          "_rev" : "215508113", 
+          "_key" : "215508113", 
+          "name" : "Bob" 
+        }, 
+        { 
+          "_id" : "persons/215770257", 
+          "_rev" : "215770257", 
+          "_key" : "215770257", 
+          "name" : "Charlie" 
+        }, 
+        { 
+          "_id" : "persons/215966865", 
+          "_rev" : "215966865", 
+          "_key" : "215966865", 
+          "name" : "Dave" 
+        } 
+      ], 
+      "paths" : [ 
+        { 
+          "edges" : [ ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/215245969", 
+              "_rev" : "215245969", 
+              "_key" : "215245969", 
+              "name" : "Alice" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/216425617", 
+              "_rev" : "216425617", 
+              "_key" : "216425617", 
+              "_from" : "persons/215245969", 
+              "_to" : "persons/215508113" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/215245969", 
+              "_rev" : "215245969", 
+              "_key" : "215245969", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/215508113", 
+              "_rev" : "215508113", 
+              "_key" : "215508113", 
+              "name" : "Bob" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/216425617", 
+              "_rev" : "216425617", 
+              "_key" : "216425617", 
+              "_from" : "persons/215245969", 
+              "_to" : "persons/215508113" 
+            }, 
+            { 
+              "_id" : "knows/216622225", 
+              "_rev" : "216622225", 
+              "_key" : "216622225", 
+              "_from" : "persons/215508113", 
+              "_to" : "persons/215770257" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/215245969", 
+              "_rev" : "215245969", 
+              "_key" : "215245969", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/215508113", 
+              "_rev" : "215508113", 
+              "_key" : "215508113", 
+              "name" : "Bob" 
+            }, 
+            { 
+              "_id" : "persons/215770257", 
+              "_rev" : "215770257", 
+              "_key" : "215770257", 
+              "name" : "Charlie" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/216425617", 
+              "_rev" : "216425617", 
+              "_key" : "216425617", 
+              "_from" : "persons/215245969", 
+              "_to" : "persons/215508113" 
+            }, 
+            { 
+              "_id" : "knows/216818833", 
+              "_rev" : "216818833", 
+              "_key" : "216818833", 
+              "_from" : "persons/215508113", 
+              "_to" : "persons/215966865" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/215245969", 
+              "_rev" : "215245969", 
+              "_key" : "215245969", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/215508113", 
+              "_rev" : "215508113", 
+              "_key" : "215508113", 
+              "name" : "Bob" 
+            }, 
+            { 
+              "_id" : "persons/215966865", 
+              "_rev" : "215966865", 
+              "_key" : "215966865", 
+              "name" : "Dave" 
+            } 
+          ] 
+        } 
+      ] 
+    } 
+  }, 
+  "error" : false, 
+  "code" : 200 
+}
+
+</pre><p> Follow only inbound edges:<pre class="fragment">unix&gt; curl -X POST --data @- --dump - http://localhost:8529/_api/traversal
+{ "startVertex": "persons/219702417", "edgeCollection" : "knows", "direction" : "inbound"}
+
+HTTP/1.1 200 OK
+content-type: application/json; charset=utf-8
+
+{ 
+  "result" : { 
+    "visited" : { 
+      "vertices" : [ 
+        { 
+          "_id" : "persons/219702417", 
+          "_rev" : "219702417", 
+          "_key" : "219702417", 
+          "name" : "Alice" 
+        }, 
+        { 
+          "_id" : "persons/220685457", 
+          "_rev" : "220685457", 
+          "_key" : "220685457", 
+          "name" : "Eve" 
+        } 
+      ], 
+      "paths" : [ 
+        { 
+          "edges" : [ ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/219702417", 
+              "_rev" : "219702417", 
+              "_key" : "219702417", 
+              "name" : "Alice" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/221537425", 
+              "_rev" : "221537425", 
+              "_key" : "221537425", 
+              "_from" : "persons/220685457", 
+              "_to" : "persons/219702417" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/219702417", 
+              "_rev" : "219702417", 
+              "_key" : "219702417", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/220685457", 
+              "_rev" : "220685457", 
+              "_key" : "220685457", 
+              "name" : "Eve" 
+            } 
+          ] 
+        } 
+      ] 
+    } 
+  }, 
+  "error" : false, 
+  "code" : 200 
+}
+
+</pre><p> Follow any direction of edges:<pre class="fragment">unix&gt; curl -X POST --data @- --dump - http://localhost:8529/_api/traversal
+{"startVertex":"persons/223962257","edgeCollection":"knows","direction":"any","uniqueness":{"vertices":"none","edges":"global"}}
+
+HTTP/1.1 200 OK
+content-type: application/json; charset=utf-8
+
+{ 
+  "result" : { 
+    "visited" : { 
+      "vertices" : [ 
+        { 
+          "_id" : "persons/223962257", 
+          "_rev" : "223962257", 
+          "_key" : "223962257", 
+          "name" : "Alice" 
+        }, 
+        { 
+          "_id" : "persons/224945297", 
+          "_rev" : "224945297", 
+          "_key" : "224945297", 
+          "name" : "Eve" 
+        }, 
+        { 
+          "_id" : "persons/224289937", 
+          "_rev" : "224289937", 
+          "_key" : "224289937", 
+          "name" : "Bob" 
+        }, 
+        { 
+          "_id" : "persons/223962257", 
+          "_rev" : "223962257", 
+          "_key" : "223962257", 
+          "name" : "Alice" 
+        }, 
+        { 
+          "_id" : "persons/224552081", 
+          "_rev" : "224552081", 
+          "_key" : "224552081", 
+          "name" : "Charlie" 
+        }, 
+        { 
+          "_id" : "persons/224748689", 
+          "_rev" : "224748689", 
+          "_key" : "224748689", 
+          "name" : "Dave" 
+        } 
+      ], 
+      "paths" : [ 
+        { 
+          "edges" : [ ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/223962257", 
+              "_rev" : "223962257", 
+              "_key" : "223962257", 
+              "name" : "Alice" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/225797265", 
+              "_rev" : "225797265", 
+              "_key" : "225797265", 
+              "_from" : "persons/224945297", 
+              "_to" : "persons/223962257" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/223962257", 
+              "_rev" : "223962257", 
+              "_key" : "223962257", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/224945297", 
+              "_rev" : "224945297", 
+              "_key" : "224945297", 
+              "name" : "Eve" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/225797265", 
+              "_rev" : "225797265", 
+              "_key" : "225797265", 
+              "_from" : "persons/224945297", 
+              "_to" : "persons/223962257" 
+            }, 
+            { 
+              "_id" : "knows/225993873", 
+              "_rev" : "225993873", 
+              "_key" : "225993873", 
+              "_from" : "persons/224945297", 
+              "_to" : "persons/224289937" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/223962257", 
+              "_rev" : "223962257", 
+              "_key" : "223962257", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/224945297", 
+              "_rev" : "224945297", 
+              "_key" : "224945297", 
+              "name" : "Eve" 
+            }, 
+            { 
+              "_id" : "persons/224289937", 
+              "_rev" : "224289937", 
+              "_key" : "224289937", 
+              "name" : "Bob" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/225797265", 
+              "_rev" : "225797265", 
+              "_key" : "225797265", 
+              "_from" : "persons/224945297", 
+              "_to" : "persons/223962257" 
+            }, 
+            { 
+              "_id" : "knows/225993873", 
+              "_rev" : "225993873", 
+              "_key" : "225993873", 
+              "_from" : "persons/224945297", 
+              "_to" : "persons/224289937" 
+            }, 
+            { 
+              "_id" : "knows/225207441", 
+              "_rev" : "225207441", 
+              "_key" : "225207441", 
+              "_from" : "persons/223962257", 
+              "_to" : "persons/224289937" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/223962257", 
+              "_rev" : "223962257", 
+              "_key" : "223962257", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/224945297", 
+              "_rev" : "224945297", 
+              "_key" : "224945297", 
+              "name" : "Eve" 
+            }, 
+            { 
+              "_id" : "persons/224289937", 
+              "_rev" : "224289937", 
+              "_key" : "224289937", 
+              "name" : "Bob" 
+            }, 
+            { 
+              "_id" : "persons/223962257", 
+              "_rev" : "223962257", 
+              "_key" : "223962257", 
+              "name" : "Alice" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/225797265", 
+              "_rev" : "225797265", 
+              "_key" : "225797265", 
+              "_from" : "persons/224945297", 
+              "_to" : "persons/223962257" 
+            }, 
+            { 
+              "_id" : "knows/225993873", 
+              "_rev" : "225993873", 
+              "_key" : "225993873", 
+              "_from" : "persons/224945297", 
+              "_to" : "persons/224289937" 
+            }, 
+            { 
+              "_id" : "knows/225404049", 
+              "_rev" : "225404049", 
+              "_key" : "225404049", 
+              "_from" : "persons/224289937", 
+              "_to" : "persons/224552081" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/223962257", 
+              "_rev" : "223962257", 
+              "_key" : "223962257", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/224945297", 
+              "_rev" : "224945297", 
+              "_key" : "224945297", 
+              "name" : "Eve" 
+            }, 
+            { 
+              "_id" : "persons/224289937", 
+              "_rev" : "224289937", 
+              "_key" : "224289937", 
+              "name" : "Bob" 
+            }, 
+            { 
+              "_id" : "persons/224552081", 
+              "_rev" : "224552081", 
+              "_key" : "224552081", 
+              "name" : "Charlie" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/225797265", 
+              "_rev" : "225797265", 
+              "_key" : "225797265", 
+              "_from" : "persons/224945297", 
+              "_to" : "persons/223962257" 
+            }, 
+            { 
+              "_id" : "knows/225993873", 
+              "_rev" : "225993873", 
+              "_key" : "225993873", 
+              "_from" : "persons/224945297", 
+              "_to" : "persons/224289937" 
+            }, 
+            { 
+              "_id" : "knows/225600657", 
+              "_rev" : "225600657", 
+              "_key" : "225600657", 
+              "_from" : "persons/224289937", 
+              "_to" : "persons/224748689" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/223962257", 
+              "_rev" : "223962257", 
+              "_key" : "223962257", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/224945297", 
+              "_rev" : "224945297", 
+              "_key" : "224945297", 
+              "name" : "Eve" 
+            }, 
+            { 
+              "_id" : "persons/224289937", 
+              "_rev" : "224289937", 
+              "_key" : "224289937", 
+              "name" : "Bob" 
+            }, 
+            { 
+              "_id" : "persons/224748689", 
+              "_rev" : "224748689", 
+              "_key" : "224748689", 
+              "name" : "Dave" 
+            } 
+          ] 
+        } 
+      ] 
+    } 
+  }, 
+  "error" : false, 
+  "code" : 200 
+}
+
+</pre><p> Excluding <code>Charlie</code> and <code>Bob</code>:<pre class="fragment">unix&gt; curl -X POST --data @- --dump - http://localhost:8529/_api/traversal
+{ "startVertex": "persons/229205137", "edgeCollection" : "knows", "direction" : "outbound", "filter" : "if (vertex.name === \"Bob\" || vertex.name === \"Charlie\") {return \"exclude\";}return;"}
+
+HTTP/1.1 200 OK
+content-type: application/json; charset=utf-8
+
+{ 
+  "result" : { 
+    "visited" : { 
+      "vertices" : [ 
+        { 
+          "_id" : "persons/229205137", 
+          "_rev" : "229205137", 
+          "_key" : "229205137", 
+          "name" : "Alice" 
+        }, 
+        { 
+          "_id" : "persons/229991569", 
+          "_rev" : "229991569", 
+          "_key" : "229991569", 
+          "name" : "Dave" 
+        } 
+      ], 
+      "paths" : [ 
+        { 
+          "edges" : [ ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/229205137", 
+              "_rev" : "229205137", 
+              "_key" : "229205137", 
+              "name" : "Alice" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/230450321", 
+              "_rev" : "230450321", 
+              "_key" : "230450321", 
+              "_from" : "persons/229205137", 
+              "_to" : "persons/229532817" 
+            }, 
+            { 
+              "_id" : "knows/230843537", 
+              "_rev" : "230843537", 
+              "_key" : "230843537", 
+              "_from" : "persons/229532817", 
+              "_to" : "persons/229991569" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/229205137", 
+              "_rev" : "229205137", 
+              "_key" : "229205137", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/229532817", 
+              "_rev" : "229532817", 
+              "_key" : "229532817", 
+              "name" : "Bob" 
+            }, 
+            { 
+              "_id" : "persons/229991569", 
+              "_rev" : "229991569", 
+              "_key" : "229991569", 
+              "name" : "Dave" 
+            } 
+          ] 
+        } 
+      ] 
+    } 
+  }, 
+  "error" : false, 
+  "code" : 200 
+}
+
+</pre><p> Do not follow edges from <code>Bob</code>:<pre class="fragment">unix&gt; curl -X POST --data @- --dump - http://localhost:8529/_api/traversal
+{ "startVertex": "persons/233727121", "edgeCollection" : "knows", "direction" : "outbound", "filter" : "if (vertex.name === \"Bob\") {return \"prune\";}return;"}
+
+HTTP/1.1 200 OK
+content-type: application/json; charset=utf-8
+
+{ 
+  "result" : { 
+    "visited" : { 
+      "vertices" : [ 
+        { 
+          "_id" : "persons/233727121", 
+          "_rev" : "233727121", 
+          "_key" : "233727121", 
+          "name" : "Alice" 
+        }, 
+        { 
+          "_id" : "persons/234054801", 
+          "_rev" : "234054801", 
+          "_key" : "234054801", 
+          "name" : "Bob" 
+        } 
+      ], 
+      "paths" : [ 
+        { 
+          "edges" : [ ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/233727121", 
+              "_rev" : "233727121", 
+              "_key" : "233727121", 
+              "name" : "Alice" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/234972305", 
+              "_rev" : "234972305", 
+              "_key" : "234972305", 
+              "_from" : "persons/233727121", 
+              "_to" : "persons/234054801" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/233727121", 
+              "_rev" : "233727121", 
+              "_key" : "233727121", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/234054801", 
+              "_rev" : "234054801", 
+              "_key" : "234054801", 
+              "name" : "Bob" 
+            } 
+          ] 
+        } 
+      ] 
+    } 
+  }, 
+  "error" : false, 
+  "code" : 200 
+}
+
+</pre><p> Visit only nodes in a depth of at least 2:<pre class="fragment">unix&gt; curl -X POST --data @- --dump - http://localhost:8529/_api/traversal
+{ "startVertex": "persons/237921425", "edgeCollection" : "knows", "direction" : "outbound", "minDepth" : 2}
+
+HTTP/1.1 200 OK
+content-type: application/json; charset=utf-8
+
+{ 
+  "result" : { 
+    "visited" : { 
+      "vertices" : [ 
+        { 
+          "_id" : "persons/238511249", 
+          "_rev" : "238511249", 
+          "_key" : "238511249", 
+          "name" : "Charlie" 
+        }, 
+        { 
+          "_id" : "persons/238707857", 
+          "_rev" : "238707857", 
+          "_key" : "238707857", 
+          "name" : "Dave" 
+        } 
+      ], 
+      "paths" : [ 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/239166609", 
+              "_rev" : "239166609", 
+              "_key" : "239166609", 
+              "_from" : "persons/237921425", 
+              "_to" : "persons/238249105" 
+            }, 
+            { 
+              "_id" : "knows/239363217", 
+              "_rev" : "239363217", 
+              "_key" : "239363217", 
+              "_from" : "persons/238249105", 
+              "_to" : "persons/238511249" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/237921425", 
+              "_rev" : "237921425", 
+              "_key" : "237921425", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/238249105", 
+              "_rev" : "238249105", 
+              "_key" : "238249105", 
+              "name" : "Bob" 
+            }, 
+            { 
+              "_id" : "persons/238511249", 
+              "_rev" : "238511249", 
+              "_key" : "238511249", 
+              "name" : "Charlie" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/239166609", 
+              "_rev" : "239166609", 
+              "_key" : "239166609", 
+              "_from" : "persons/237921425", 
+              "_to" : "persons/238249105" 
+            }, 
+            { 
+              "_id" : "knows/239559825", 
+              "_rev" : "239559825", 
+              "_key" : "239559825", 
+              "_from" : "persons/238249105", 
+              "_to" : "persons/238707857" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/237921425", 
+              "_rev" : "237921425", 
+              "_key" : "237921425", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/238249105", 
+              "_rev" : "238249105", 
+              "_key" : "238249105", 
+              "name" : "Bob" 
+            }, 
+            { 
+              "_id" : "persons/238707857", 
+              "_rev" : "238707857", 
+              "_key" : "238707857", 
+              "name" : "Dave" 
+            } 
+          ] 
+        } 
+      ] 
+    } 
+  }, 
+  "error" : false, 
+  "code" : 200 
+}
+
+</pre><p> Visit only nodes in a depth of at most 1:<pre class="fragment">unix&gt; curl -X POST --data @- --dump - http://localhost:8529/_api/traversal
+{ "startVertex": "persons/242443409", "edgeCollection" : "knows", "direction" : "outbound", "maxDepth" : 1}
+
+HTTP/1.1 200 OK
+content-type: application/json; charset=utf-8
+
+{ 
+  "result" : { 
+    "visited" : { 
+      "vertices" : [ 
+        { 
+          "_id" : "persons/242443409", 
+          "_rev" : "242443409", 
+          "_key" : "242443409", 
+          "name" : "Alice" 
+        }, 
+        { 
+          "_id" : "persons/242771089", 
+          "_rev" : "242771089", 
+          "_key" : "242771089", 
+          "name" : "Bob" 
+        } 
+      ], 
+      "paths" : [ 
+        { 
+          "edges" : [ ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/242443409", 
+              "_rev" : "242443409", 
+              "_key" : "242443409", 
+              "name" : "Alice" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/243688593", 
+              "_rev" : "243688593", 
+              "_key" : "243688593", 
+              "_from" : "persons/242443409", 
+              "_to" : "persons/242771089" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/242443409", 
+              "_rev" : "242443409", 
+              "_key" : "242443409", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/242771089", 
+              "_rev" : "242771089", 
+              "_key" : "242771089", 
+              "name" : "Bob" 
+            } 
+          ] 
+        } 
+      ] 
+    } 
+  }, 
+  "error" : false, 
+  "code" : 200 
+}
+
+</pre><p> Count all visited nodes and return a list of nodes only:<pre class="fragment">unix&gt; curl -X POST --data @- --dump - http://localhost:8529/_api/traversal
+{ "startVertex": "persons/246637713", "edgeCollection" : "knows", "direction" : "outbound", "init" : "result.visited = 0; result.myVertices = [ ];", "visitor" : "result.visited++; result.myVertices.push(vertex);"}
+
+HTTP/1.1 200 OK
+content-type: application/json; charset=utf-8
+
+{ 
+  "result" : { 
+    "visited" : 4, 
+    "myVertices" : [ 
+      { 
+        "_id" : "persons/246637713", 
+        "_rev" : "246637713", 
+        "_key" : "246637713", 
+        "name" : "Alice" 
+      }, 
+      { 
+        "_id" : "persons/246965393", 
+        "_rev" : "246965393", 
+        "_key" : "246965393", 
+        "name" : "Bob" 
+      }, 
+      { 
+        "_id" : "persons/247227537", 
+        "_rev" : "247227537", 
+        "_key" : "247227537", 
+        "name" : "Charlie" 
+      }, 
+      { 
+        "_id" : "persons/247424145", 
+        "_rev" : "247424145", 
+        "_key" : "247424145", 
+        "name" : "Dave" 
+      } 
+    ] 
+  }, 
+  "error" : false, 
+  "code" : 200 
+}
+
+</pre><p> Expand only inbound edges of <code>Alice</code> and outbound edges of <code>Eve</code>:<pre class="fragment">unix&gt; curl -X POST --data @- --dump - http://localhost:8529/_api/traversal
+{"startVertex":"persons/250897553","edgeCollection":"knows","expander":"var connections = [ ];if (vertex.name === \"Alice\") {config.edgeCollection.inEdges(vertex).forEach(function (e) {connections.push({ vertex: require(\"internal\").db._document(e._from), edge: e});});}if (vertex.name === \"Eve\") {config.edgeCollection.outEdges(vertex).forEach(function (e) {connections.push({vertex: require(\"internal\").db._document(e._to), edge: e});});}return connections;"}
+
+HTTP/1.1 200 OK
+content-type: application/json; charset=utf-8
+
+{ 
+  "result" : { 
+    "visited" : { 
+      "vertices" : [ 
+        { 
+          "_id" : "persons/250897553", 
+          "_rev" : "250897553", 
+          "_key" : "250897553", 
+          "name" : "Alice" 
+        }, 
+        { 
+          "_id" : "persons/251880593", 
+          "_rev" : "251880593", 
+          "_key" : "251880593", 
+          "name" : "Eve" 
+        }, 
+        { 
+          "_id" : "persons/251225233", 
+          "_rev" : "251225233", 
+          "_key" : "251225233", 
+          "name" : "Bob" 
+        } 
+      ], 
+      "paths" : [ 
+        { 
+          "edges" : [ ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/250897553", 
+              "_rev" : "250897553", 
+              "_key" : "250897553", 
+              "name" : "Alice" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/252732561", 
+              "_rev" : "252732561", 
+              "_key" : "252732561", 
+              "_from" : "persons/251880593", 
+              "_to" : "persons/250897553" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/250897553", 
+              "_rev" : "250897553", 
+              "_key" : "250897553", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/251880593", 
+              "_rev" : "251880593", 
+              "_key" : "251880593", 
+              "name" : "Eve" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/252732561", 
+              "_rev" : "252732561", 
+              "_key" : "252732561", 
+              "_from" : "persons/251880593", 
+              "_to" : "persons/250897553" 
+            }, 
+            { 
+              "_id" : "knows/252929169", 
+              "_rev" : "252929169", 
+              "_key" : "252929169", 
+              "_from" : "persons/251880593", 
+              "_to" : "persons/251225233" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/250897553", 
+              "_rev" : "250897553", 
+              "_key" : "250897553", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/251880593", 
+              "_rev" : "251880593", 
+              "_key" : "251880593", 
+              "name" : "Eve" 
+            }, 
+            { 
+              "_id" : "persons/251225233", 
+              "_rev" : "251225233", 
+              "_key" : "251225233", 
+              "name" : "Bob" 
+            } 
+          ] 
+        } 
+      ] 
+    } 
+  }, 
+  "error" : false, 
+  "code" : 200 
+}
+
+</pre><p> Follow the <code>depthfirst</code> strategy:<pre class="fragment">unix&gt; curl -X POST --data @- --dump - http://localhost:8529/_api/traversal
+{"startVertex":"persons/255354001","edgeCollection":"knows","direction":"any","strategy":"depthfirst"}
+
+HTTP/1.1 200 OK
+content-type: application/json; charset=utf-8
+
+{ 
+  "result" : { 
+    "visited" : { 
+      "vertices" : [ 
+        { 
+          "_id" : "persons/255354001", 
+          "_rev" : "255354001", 
+          "_key" : "255354001", 
+          "name" : "Alice" 
+        }, 
+        { 
+          "_id" : "persons/256271505", 
+          "_rev" : "256271505", 
+          "_key" : "256271505", 
+          "name" : "Eve" 
+        }, 
+        { 
+          "_id" : "persons/255616145", 
+          "_rev" : "255616145", 
+          "_key" : "255616145", 
+          "name" : "Bob" 
+        }, 
+        { 
+          "_id" : "persons/255354001", 
+          "_rev" : "255354001", 
+          "_key" : "255354001", 
+          "name" : "Alice" 
+        }, 
+        { 
+          "_id" : "persons/255878289", 
+          "_rev" : "255878289", 
+          "_key" : "255878289", 
+          "name" : "Charlie" 
+        }, 
+        { 
+          "_id" : "persons/256074897", 
+          "_rev" : "256074897", 
+          "_key" : "256074897", 
+          "name" : "Dave" 
+        }, 
+        { 
+          "_id" : "persons/255616145", 
+          "_rev" : "255616145", 
+          "_key" : "255616145", 
+          "name" : "Bob" 
+        }, 
+        { 
+          "_id" : "persons/256271505", 
+          "_rev" : "256271505", 
+          "_key" : "256271505", 
+          "name" : "Eve" 
+        }, 
+        { 
+          "_id" : "persons/255354001", 
+          "_rev" : "255354001", 
+          "_key" : "255354001", 
+          "name" : "Alice" 
+        }, 
+        { 
+          "_id" : "persons/255878289", 
+          "_rev" : "255878289", 
+          "_key" : "255878289", 
+          "name" : "Charlie" 
+        }, 
+        { 
+          "_id" : "persons/256074897", 
+          "_rev" : "256074897", 
+          "_key" : "256074897", 
+          "name" : "Dave" 
+        } 
+      ], 
+      "paths" : [ 
+        { 
+          "edges" : [ ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/255354001", 
+              "_rev" : "255354001", 
+              "_key" : "255354001", 
+              "name" : "Alice" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/257123473", 
+              "_rev" : "257123473", 
+              "_key" : "257123473", 
+              "_from" : "persons/256271505", 
+              "_to" : "persons/255354001" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/255354001", 
+              "_rev" : "255354001", 
+              "_key" : "255354001", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/256271505", 
+              "_rev" : "256271505", 
+              "_key" : "256271505", 
+              "name" : "Eve" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/257123473", 
+              "_rev" : "257123473", 
+              "_key" : "257123473", 
+              "_from" : "persons/256271505", 
+              "_to" : "persons/255354001" 
+            }, 
+            { 
+              "_id" : "knows/257320081", 
+              "_rev" : "257320081", 
+              "_key" : "257320081", 
+              "_from" : "persons/256271505", 
+              "_to" : "persons/255616145" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/255354001", 
+              "_rev" : "255354001", 
+              "_key" : "255354001", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/256271505", 
+              "_rev" : "256271505", 
+              "_key" : "256271505", 
+              "name" : "Eve" 
+            }, 
+            { 
+              "_id" : "persons/255616145", 
+              "_rev" : "255616145", 
+              "_key" : "255616145", 
+              "name" : "Bob" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/257123473", 
+              "_rev" : "257123473", 
+              "_key" : "257123473", 
+              "_from" : "persons/256271505", 
+              "_to" : "persons/255354001" 
+            }, 
+            { 
+              "_id" : "knows/257320081", 
+              "_rev" : "257320081", 
+              "_key" : "257320081", 
+              "_from" : "persons/256271505", 
+              "_to" : "persons/255616145" 
+            }, 
+            { 
+              "_id" : "knows/256533649", 
+              "_rev" : "256533649", 
+              "_key" : "256533649", 
+              "_from" : "persons/255354001", 
+              "_to" : "persons/255616145" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/255354001", 
+              "_rev" : "255354001", 
+              "_key" : "255354001", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/256271505", 
+              "_rev" : "256271505", 
+              "_key" : "256271505", 
+              "name" : "Eve" 
+            }, 
+            { 
+              "_id" : "persons/255616145", 
+              "_rev" : "255616145", 
+              "_key" : "255616145", 
+              "name" : "Bob" 
+            }, 
+            { 
+              "_id" : "persons/255354001", 
+              "_rev" : "255354001", 
+              "_key" : "255354001", 
+              "name" : "Alice" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/257123473", 
+              "_rev" : "257123473", 
+              "_key" : "257123473", 
+              "_from" : "persons/256271505", 
+              "_to" : "persons/255354001" 
+            }, 
+            { 
+              "_id" : "knows/257320081", 
+              "_rev" : "257320081", 
+              "_key" : "257320081", 
+              "_from" : "persons/256271505", 
+              "_to" : "persons/255616145" 
+            }, 
+            { 
+              "_id" : "knows/256730257", 
+              "_rev" : "256730257", 
+              "_key" : "256730257", 
+              "_from" : "persons/255616145", 
+              "_to" : "persons/255878289" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/255354001", 
+              "_rev" : "255354001", 
+              "_key" : "255354001", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/256271505", 
+              "_rev" : "256271505", 
+              "_key" : "256271505", 
+              "name" : "Eve" 
+            }, 
+            { 
+              "_id" : "persons/255616145", 
+              "_rev" : "255616145", 
+              "_key" : "255616145", 
+              "name" : "Bob" 
+            }, 
+            { 
+              "_id" : "persons/255878289", 
+              "_rev" : "255878289", 
+              "_key" : "255878289", 
+              "name" : "Charlie" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/257123473", 
+              "_rev" : "257123473", 
+              "_key" : "257123473", 
+              "_from" : "persons/256271505", 
+              "_to" : "persons/255354001" 
+            }, 
+            { 
+              "_id" : "knows/257320081", 
+              "_rev" : "257320081", 
+              "_key" : "257320081", 
+              "_from" : "persons/256271505", 
+              "_to" : "persons/255616145" 
+            }, 
+            { 
+              "_id" : "knows/256926865", 
+              "_rev" : "256926865", 
+              "_key" : "256926865", 
+              "_from" : "persons/255616145", 
+              "_to" : "persons/256074897" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/255354001", 
+              "_rev" : "255354001", 
+              "_key" : "255354001", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/256271505", 
+              "_rev" : "256271505", 
+              "_key" : "256271505", 
+              "name" : "Eve" 
+            }, 
+            { 
+              "_id" : "persons/255616145", 
+              "_rev" : "255616145", 
+              "_key" : "255616145", 
+              "name" : "Bob" 
+            }, 
+            { 
+              "_id" : "persons/256074897", 
+              "_rev" : "256074897", 
+              "_key" : "256074897", 
+              "name" : "Dave" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/256533649", 
+              "_rev" : "256533649", 
+              "_key" : "256533649", 
+              "_from" : "persons/255354001", 
+              "_to" : "persons/255616145" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/255354001", 
+              "_rev" : "255354001", 
+              "_key" : "255354001", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/255616145", 
+              "_rev" : "255616145", 
+              "_key" : "255616145", 
+              "name" : "Bob" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/256533649", 
+              "_rev" : "256533649", 
+              "_key" : "256533649", 
+              "_from" : "persons/255354001", 
+              "_to" : "persons/255616145" 
+            }, 
+            { 
+              "_id" : "knows/257320081", 
+              "_rev" : "257320081", 
+              "_key" : "257320081", 
+              "_from" : "persons/256271505", 
+              "_to" : "persons/255616145" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/255354001", 
+              "_rev" : "255354001", 
+              "_key" : "255354001", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/255616145", 
+              "_rev" : "255616145", 
+              "_key" : "255616145", 
+              "name" : "Bob" 
+            }, 
+            { 
+              "_id" : "persons/256271505", 
+              "_rev" : "256271505", 
+              "_key" : "256271505", 
+              "name" : "Eve" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/256533649", 
+              "_rev" : "256533649", 
+              "_key" : "256533649", 
+              "_from" : "persons/255354001", 
+              "_to" : "persons/255616145" 
+            }, 
+            { 
+              "_id" : "knows/257320081", 
+              "_rev" : "257320081", 
+              "_key" : "257320081", 
+              "_from" : "persons/256271505", 
+              "_to" : "persons/255616145" 
+            }, 
+            { 
+              "_id" : "knows/257123473", 
+              "_rev" : "257123473", 
+              "_key" : "257123473", 
+              "_from" : "persons/256271505", 
+              "_to" : "persons/255354001" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/255354001", 
+              "_rev" : "255354001", 
+              "_key" : "255354001", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/255616145", 
+              "_rev" : "255616145", 
+              "_key" : "255616145", 
+              "name" : "Bob" 
+            }, 
+            { 
+              "_id" : "persons/256271505", 
+              "_rev" : "256271505", 
+              "_key" : "256271505", 
+              "name" : "Eve" 
+            }, 
+            { 
+              "_id" : "persons/255354001", 
+              "_rev" : "255354001", 
+              "_key" : "255354001", 
+              "name" : "Alice" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/256533649", 
+              "_rev" : "256533649", 
+              "_key" : "256533649", 
+              "_from" : "persons/255354001", 
+              "_to" : "persons/255616145" 
+            }, 
+            { 
+              "_id" : "knows/256730257", 
+              "_rev" : "256730257", 
+              "_key" : "256730257", 
+              "_from" : "persons/255616145", 
+              "_to" : "persons/255878289" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/255354001", 
+              "_rev" : "255354001", 
+              "_key" : "255354001", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/255616145", 
+              "_rev" : "255616145", 
+              "_key" : "255616145", 
+              "name" : "Bob" 
+            }, 
+            { 
+              "_id" : "persons/255878289", 
+              "_rev" : "255878289", 
+              "_key" : "255878289", 
+              "name" : "Charlie" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/256533649", 
+              "_rev" : "256533649", 
+              "_key" : "256533649", 
+              "_from" : "persons/255354001", 
+              "_to" : "persons/255616145" 
+            }, 
+            { 
+              "_id" : "knows/256926865", 
+              "_rev" : "256926865", 
+              "_key" : "256926865", 
+              "_from" : "persons/255616145", 
+              "_to" : "persons/256074897" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/255354001", 
+              "_rev" : "255354001", 
+              "_key" : "255354001", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/255616145", 
+              "_rev" : "255616145", 
+              "_key" : "255616145", 
+              "name" : "Bob" 
+            }, 
+            { 
+              "_id" : "persons/256074897", 
+              "_rev" : "256074897", 
+              "_key" : "256074897", 
+              "name" : "Dave" 
+            } 
+          ] 
+        } 
+      ] 
+    } 
+  }, 
+  "error" : false, 
+  "code" : 200 
+}
+
+</pre><p> Using <code>postorder</code> ordering:<pre class="fragment">unix&gt; curl -X POST --data @- --dump - http://localhost:8529/_api/traversal
+{"startVertex":"persons/261514385","edgeCollection":"knows","direction":"any","order":"postorder"}
+
+HTTP/1.1 200 OK
+content-type: application/json; charset=utf-8
+
+{ 
+  "result" : { 
+    "visited" : { 
+      "vertices" : [ 
+        { 
+          "_id" : "persons/261514385", 
+          "_rev" : "261514385", 
+          "_key" : "261514385", 
+          "name" : "Alice" 
+        }, 
+        { 
+          "_id" : "persons/262104209", 
+          "_rev" : "262104209", 
+          "_key" : "262104209", 
+          "name" : "Charlie" 
+        }, 
+        { 
+          "_id" : "persons/262300817", 
+          "_rev" : "262300817", 
+          "_key" : "262300817", 
+          "name" : "Dave" 
+        }, 
+        { 
+          "_id" : "persons/261842065", 
+          "_rev" : "261842065", 
+          "_key" : "261842065", 
+          "name" : "Bob" 
+        }, 
+        { 
+          "_id" : "persons/262497425", 
+          "_rev" : "262497425", 
+          "_key" : "262497425", 
+          "name" : "Eve" 
+        }, 
+        { 
+          "_id" : "persons/261514385", 
+          "_rev" : "261514385", 
+          "_key" : "261514385", 
+          "name" : "Alice" 
+        }, 
+        { 
+          "_id" : "persons/262497425", 
+          "_rev" : "262497425", 
+          "_key" : "262497425", 
+          "name" : "Eve" 
+        }, 
+        { 
+          "_id" : "persons/262104209", 
+          "_rev" : "262104209", 
+          "_key" : "262104209", 
+          "name" : "Charlie" 
+        }, 
+        { 
+          "_id" : "persons/262300817", 
+          "_rev" : "262300817", 
+          "_key" : "262300817", 
+          "name" : "Dave" 
+        }, 
+        { 
+          "_id" : "persons/261842065", 
+          "_rev" : "261842065", 
+          "_key" : "261842065", 
+          "name" : "Bob" 
+        }, 
+        { 
+          "_id" : "persons/261514385", 
+          "_rev" : "261514385", 
+          "_key" : "261514385", 
+          "name" : "Alice" 
+        } 
+      ], 
+      "paths" : [ 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/263349393", 
+              "_rev" : "263349393", 
+              "_key" : "263349393", 
+              "_from" : "persons/262497425", 
+              "_to" : "persons/261514385" 
+            }, 
+            { 
+              "_id" : "knows/263546001", 
+              "_rev" : "263546001", 
+              "_key" : "263546001", 
+              "_from" : "persons/262497425", 
+              "_to" : "persons/261842065" 
+            }, 
+            { 
+              "_id" : "knows/262759569", 
+              "_rev" : "262759569", 
+              "_key" : "262759569", 
+              "_from" : "persons/261514385", 
+              "_to" : "persons/261842065" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/261514385", 
+              "_rev" : "261514385", 
+              "_key" : "261514385", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/262497425", 
+              "_rev" : "262497425", 
+              "_key" : "262497425", 
+              "name" : "Eve" 
+            }, 
+            { 
+              "_id" : "persons/261842065", 
+              "_rev" : "261842065", 
+              "_key" : "261842065", 
+              "name" : "Bob" 
+            }, 
+            { 
+              "_id" : "persons/261514385", 
+              "_rev" : "261514385", 
+              "_key" : "261514385", 
+              "name" : "Alice" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/263349393", 
+              "_rev" : "263349393", 
+              "_key" : "263349393", 
+              "_from" : "persons/262497425", 
+              "_to" : "persons/261514385" 
+            }, 
+            { 
+              "_id" : "knows/263546001", 
+              "_rev" : "263546001", 
+              "_key" : "263546001", 
+              "_from" : "persons/262497425", 
+              "_to" : "persons/261842065" 
+            }, 
+            { 
+              "_id" : "knows/262956177", 
+              "_rev" : "262956177", 
+              "_key" : "262956177", 
+              "_from" : "persons/261842065", 
+              "_to" : "persons/262104209" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/261514385", 
+              "_rev" : "261514385", 
+              "_key" : "261514385", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/262497425", 
+              "_rev" : "262497425", 
+              "_key" : "262497425", 
+              "name" : "Eve" 
+            }, 
+            { 
+              "_id" : "persons/261842065", 
+              "_rev" : "261842065", 
+              "_key" : "261842065", 
+              "name" : "Bob" 
+            }, 
+            { 
+              "_id" : "persons/262104209", 
+              "_rev" : "262104209", 
+              "_key" : "262104209", 
+              "name" : "Charlie" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/263349393", 
+              "_rev" : "263349393", 
+              "_key" : "263349393", 
+              "_from" : "persons/262497425", 
+              "_to" : "persons/261514385" 
+            }, 
+            { 
+              "_id" : "knows/263546001", 
+              "_rev" : "263546001", 
+              "_key" : "263546001", 
+              "_from" : "persons/262497425", 
+              "_to" : "persons/261842065" 
+            }, 
+            { 
+              "_id" : "knows/263152785", 
+              "_rev" : "263152785", 
+              "_key" : "263152785", 
+              "_from" : "persons/261842065", 
+              "_to" : "persons/262300817" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/261514385", 
+              "_rev" : "261514385", 
+              "_key" : "261514385", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/262497425", 
+              "_rev" : "262497425", 
+              "_key" : "262497425", 
+              "name" : "Eve" 
+            }, 
+            { 
+              "_id" : "persons/261842065", 
+              "_rev" : "261842065", 
+              "_key" : "261842065", 
+              "name" : "Bob" 
+            }, 
+            { 
+              "_id" : "persons/262300817", 
+              "_rev" : "262300817", 
+              "_key" : "262300817", 
+              "name" : "Dave" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/263349393", 
+              "_rev" : "263349393", 
+              "_key" : "263349393", 
+              "_from" : "persons/262497425", 
+              "_to" : "persons/261514385" 
+            }, 
+            { 
+              "_id" : "knows/263546001", 
+              "_rev" : "263546001", 
+              "_key" : "263546001", 
+              "_from" : "persons/262497425", 
+              "_to" : "persons/261842065" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/261514385", 
+              "_rev" : "261514385", 
+              "_key" : "261514385", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/262497425", 
+              "_rev" : "262497425", 
+              "_key" : "262497425", 
+              "name" : "Eve" 
+            }, 
+            { 
+              "_id" : "persons/261842065", 
+              "_rev" : "261842065", 
+              "_key" : "261842065", 
+              "name" : "Bob" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/263349393", 
+              "_rev" : "263349393", 
+              "_key" : "263349393", 
+              "_from" : "persons/262497425", 
+              "_to" : "persons/261514385" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/261514385", 
+              "_rev" : "261514385", 
+              "_key" : "261514385", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/262497425", 
+              "_rev" : "262497425", 
+              "_key" : "262497425", 
+              "name" : "Eve" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/262759569", 
+              "_rev" : "262759569", 
+              "_key" : "262759569", 
+              "_from" : "persons/261514385", 
+              "_to" : "persons/261842065" 
+            }, 
+            { 
+              "_id" : "knows/263546001", 
+              "_rev" : "263546001", 
+              "_key" : "263546001", 
+              "_from" : "persons/262497425", 
+              "_to" : "persons/261842065" 
+            }, 
+            { 
+              "_id" : "knows/263349393", 
+              "_rev" : "263349393", 
+              "_key" : "263349393", 
+              "_from" : "persons/262497425", 
+              "_to" : "persons/261514385" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/261514385", 
+              "_rev" : "261514385", 
+              "_key" : "261514385", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/261842065", 
+              "_rev" : "261842065", 
+              "_key" : "261842065", 
+              "name" : "Bob" 
+            }, 
+            { 
+              "_id" : "persons/262497425", 
+              "_rev" : "262497425", 
+              "_key" : "262497425", 
+              "name" : "Eve" 
+            }, 
+            { 
+              "_id" : "persons/261514385", 
+              "_rev" : "261514385", 
+              "_key" : "261514385", 
+              "name" : "Alice" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/262759569", 
+              "_rev" : "262759569", 
+              "_key" : "262759569", 
+              "_from" : "persons/261514385", 
+              "_to" : "persons/261842065" 
+            }, 
+            { 
+              "_id" : "knows/263546001", 
+              "_rev" : "263546001", 
+              "_key" : "263546001", 
+              "_from" : "persons/262497425", 
+              "_to" : "persons/261842065" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/261514385", 
+              "_rev" : "261514385", 
+              "_key" : "261514385", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/261842065", 
+              "_rev" : "261842065", 
+              "_key" : "261842065", 
+              "name" : "Bob" 
+            }, 
+            { 
+              "_id" : "persons/262497425", 
+              "_rev" : "262497425", 
+              "_key" : "262497425", 
+              "name" : "Eve" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/262759569", 
+              "_rev" : "262759569", 
+              "_key" : "262759569", 
+              "_from" : "persons/261514385", 
+              "_to" : "persons/261842065" 
+            }, 
+            { 
+              "_id" : "knows/262956177", 
+              "_rev" : "262956177", 
+              "_key" : "262956177", 
+              "_from" : "persons/261842065", 
+              "_to" : "persons/262104209" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/261514385", 
+              "_rev" : "261514385", 
+              "_key" : "261514385", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/261842065", 
+              "_rev" : "261842065", 
+              "_key" : "261842065", 
+              "name" : "Bob" 
+            }, 
+            { 
+              "_id" : "persons/262104209", 
+              "_rev" : "262104209", 
+              "_key" : "262104209", 
+              "name" : "Charlie" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/262759569", 
+              "_rev" : "262759569", 
+              "_key" : "262759569", 
+              "_from" : "persons/261514385", 
+              "_to" : "persons/261842065" 
+            }, 
+            { 
+              "_id" : "knows/263152785", 
+              "_rev" : "263152785", 
+              "_key" : "263152785", 
+              "_from" : "persons/261842065", 
+              "_to" : "persons/262300817" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/261514385", 
+              "_rev" : "261514385", 
+              "_key" : "261514385", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/261842065", 
+              "_rev" : "261842065", 
+              "_key" : "261842065", 
+              "name" : "Bob" 
+            }, 
+            { 
+              "_id" : "persons/262300817", 
+              "_rev" : "262300817", 
+              "_key" : "262300817", 
+              "name" : "Dave" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/262759569", 
+              "_rev" : "262759569", 
+              "_key" : "262759569", 
+              "_from" : "persons/261514385", 
+              "_to" : "persons/261842065" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/261514385", 
+              "_rev" : "261514385", 
+              "_key" : "261514385", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/261842065", 
+              "_rev" : "261842065", 
+              "_key" : "261842065", 
+              "name" : "Bob" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/261514385", 
+              "_rev" : "261514385", 
+              "_key" : "261514385", 
+              "name" : "Alice" 
+            } 
+          ] 
+        } 
+      ] 
+    } 
+  }, 
+  "error" : false, 
+  "code" : 200 
+}
+
+</pre><p> Using <code>backward</code> item-ordering:<pre class="fragment">unix&gt; curl -X POST --data @- --dump - http://localhost:8529/_api/traversal
+{"startVertex":"persons/267740305","edgeCollection":"knows","direction":"any","itemOrder":"backward"}
+
+HTTP/1.1 200 OK
+content-type: application/json; charset=utf-8
+
+{ 
+  "result" : { 
+    "visited" : { 
+      "vertices" : [ 
+        { 
+          "_id" : "persons/267740305", 
+          "_rev" : "267740305", 
+          "_key" : "267740305", 
+          "name" : "Alice" 
+        }, 
+        { 
+          "_id" : "persons/268067985", 
+          "_rev" : "268067985", 
+          "_key" : "268067985", 
+          "name" : "Bob" 
+        }, 
+        { 
+          "_id" : "persons/268526737", 
+          "_rev" : "268526737", 
+          "_key" : "268526737", 
+          "name" : "Dave" 
+        }, 
+        { 
+          "_id" : "persons/268330129", 
+          "_rev" : "268330129", 
+          "_key" : "268330129", 
+          "name" : "Charlie" 
+        }, 
+        { 
+          "_id" : "persons/268723345", 
+          "_rev" : "268723345", 
+          "_key" : "268723345", 
+          "name" : "Eve" 
+        }, 
+        { 
+          "_id" : "persons/267740305", 
+          "_rev" : "267740305", 
+          "_key" : "267740305", 
+          "name" : "Alice" 
+        }, 
+        { 
+          "_id" : "persons/268723345", 
+          "_rev" : "268723345", 
+          "_key" : "268723345", 
+          "name" : "Eve" 
+        }, 
+        { 
+          "_id" : "persons/268067985", 
+          "_rev" : "268067985", 
+          "_key" : "268067985", 
+          "name" : "Bob" 
+        }, 
+        { 
+          "_id" : "persons/268526737", 
+          "_rev" : "268526737", 
+          "_key" : "268526737", 
+          "name" : "Dave" 
+        }, 
+        { 
+          "_id" : "persons/268330129", 
+          "_rev" : "268330129", 
+          "_key" : "268330129", 
+          "name" : "Charlie" 
+        }, 
+        { 
+          "_id" : "persons/267740305", 
+          "_rev" : "267740305", 
+          "_key" : "267740305", 
+          "name" : "Alice" 
+        } 
+      ], 
+      "paths" : [ 
+        { 
+          "edges" : [ ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/267740305", 
+              "_rev" : "267740305", 
+              "_key" : "267740305", 
+              "name" : "Alice" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/268985489", 
+              "_rev" : "268985489", 
+              "_key" : "268985489", 
+              "_from" : "persons/267740305", 
+              "_to" : "persons/268067985" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/267740305", 
+              "_rev" : "267740305", 
+              "_key" : "267740305", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/268067985", 
+              "_rev" : "268067985", 
+              "_key" : "268067985", 
+              "name" : "Bob" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/268985489", 
+              "_rev" : "268985489", 
+              "_key" : "268985489", 
+              "_from" : "persons/267740305", 
+              "_to" : "persons/268067985" 
+            }, 
+            { 
+              "_id" : "knows/269378705", 
+              "_rev" : "269378705", 
+              "_key" : "269378705", 
+              "_from" : "persons/268067985", 
+              "_to" : "persons/268526737" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/267740305", 
+              "_rev" : "267740305", 
+              "_key" : "267740305", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/268067985", 
+              "_rev" : "268067985", 
+              "_key" : "268067985", 
+              "name" : "Bob" 
+            }, 
+            { 
+              "_id" : "persons/268526737", 
+              "_rev" : "268526737", 
+              "_key" : "268526737", 
+              "name" : "Dave" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/268985489", 
+              "_rev" : "268985489", 
+              "_key" : "268985489", 
+              "_from" : "persons/267740305", 
+              "_to" : "persons/268067985" 
+            }, 
+            { 
+              "_id" : "knows/269182097", 
+              "_rev" : "269182097", 
+              "_key" : "269182097", 
+              "_from" : "persons/268067985", 
+              "_to" : "persons/268330129" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/267740305", 
+              "_rev" : "267740305", 
+              "_key" : "267740305", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/268067985", 
+              "_rev" : "268067985", 
+              "_key" : "268067985", 
+              "name" : "Bob" 
+            }, 
+            { 
+              "_id" : "persons/268330129", 
+              "_rev" : "268330129", 
+              "_key" : "268330129", 
+              "name" : "Charlie" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/268985489", 
+              "_rev" : "268985489", 
+              "_key" : "268985489", 
+              "_from" : "persons/267740305", 
+              "_to" : "persons/268067985" 
+            }, 
+            { 
+              "_id" : "knows/269771921", 
+              "_rev" : "269771921", 
+              "_key" : "269771921", 
+              "_from" : "persons/268723345", 
+              "_to" : "persons/268067985" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/267740305", 
+              "_rev" : "267740305", 
+              "_key" : "267740305", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/268067985", 
+              "_rev" : "268067985", 
+              "_key" : "268067985", 
+              "name" : "Bob" 
+            }, 
+            { 
+              "_id" : "persons/268723345", 
+              "_rev" : "268723345", 
+              "_key" : "268723345", 
+              "name" : "Eve" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/268985489", 
+              "_rev" : "268985489", 
+              "_key" : "268985489", 
+              "_from" : "persons/267740305", 
+              "_to" : "persons/268067985" 
+            }, 
+            { 
+              "_id" : "knows/269771921", 
+              "_rev" : "269771921", 
+              "_key" : "269771921", 
+              "_from" : "persons/268723345", 
+              "_to" : "persons/268067985" 
+            }, 
+            { 
+              "_id" : "knows/269575313", 
+              "_rev" : "269575313", 
+              "_key" : "269575313", 
+              "_from" : "persons/268723345", 
+              "_to" : "persons/267740305" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/267740305", 
+              "_rev" : "267740305", 
+              "_key" : "267740305", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/268067985", 
+              "_rev" : "268067985", 
+              "_key" : "268067985", 
+              "name" : "Bob" 
+            }, 
+            { 
+              "_id" : "persons/268723345", 
+              "_rev" : "268723345", 
+              "_key" : "268723345", 
+              "name" : "Eve" 
+            }, 
+            { 
+              "_id" : "persons/267740305", 
+              "_rev" : "267740305", 
+              "_key" : "267740305", 
+              "name" : "Alice" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/269575313", 
+              "_rev" : "269575313", 
+              "_key" : "269575313", 
+              "_from" : "persons/268723345", 
+              "_to" : "persons/267740305" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/267740305", 
+              "_rev" : "267740305", 
+              "_key" : "267740305", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/268723345", 
+              "_rev" : "268723345", 
+              "_key" : "268723345", 
+              "name" : "Eve" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/269575313", 
+              "_rev" : "269575313", 
+              "_key" : "269575313", 
+              "_from" : "persons/268723345", 
+              "_to" : "persons/267740305" 
+            }, 
+            { 
+              "_id" : "knows/269771921", 
+              "_rev" : "269771921", 
+              "_key" : "269771921", 
+              "_from" : "persons/268723345", 
+              "_to" : "persons/268067985" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/267740305", 
+              "_rev" : "267740305", 
+              "_key" : "267740305", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/268723345", 
+              "_rev" : "268723345", 
+              "_key" : "268723345", 
+              "name" : "Eve" 
+            }, 
+            { 
+              "_id" : "persons/268067985", 
+              "_rev" : "268067985", 
+              "_key" : "268067985", 
+              "name" : "Bob" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/269575313", 
+              "_rev" : "269575313", 
+              "_key" : "269575313", 
+              "_from" : "persons/268723345", 
+              "_to" : "persons/267740305" 
+            }, 
+            { 
+              "_id" : "knows/269771921", 
+              "_rev" : "269771921", 
+              "_key" : "269771921", 
+              "_from" : "persons/268723345", 
+              "_to" : "persons/268067985" 
+            }, 
+            { 
+              "_id" : "knows/269378705", 
+              "_rev" : "269378705", 
+              "_key" : "269378705", 
+              "_from" : "persons/268067985", 
+              "_to" : "persons/268526737" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/267740305", 
+              "_rev" : "267740305", 
+              "_key" : "267740305", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/268723345", 
+              "_rev" : "268723345", 
+              "_key" : "268723345", 
+              "name" : "Eve" 
+            }, 
+            { 
+              "_id" : "persons/268067985", 
+              "_rev" : "268067985", 
+              "_key" : "268067985", 
+              "name" : "Bob" 
+            }, 
+            { 
+              "_id" : "persons/268526737", 
+              "_rev" : "268526737", 
+              "_key" : "268526737", 
+              "name" : "Dave" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/269575313", 
+              "_rev" : "269575313", 
+              "_key" : "269575313", 
+              "_from" : "persons/268723345", 
+              "_to" : "persons/267740305" 
+            }, 
+            { 
+              "_id" : "knows/269771921", 
+              "_rev" : "269771921", 
+              "_key" : "269771921", 
+              "_from" : "persons/268723345", 
+              "_to" : "persons/268067985" 
+            }, 
+            { 
+              "_id" : "knows/269182097", 
+              "_rev" : "269182097", 
+              "_key" : "269182097", 
+              "_from" : "persons/268067985", 
+              "_to" : "persons/268330129" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/267740305", 
+              "_rev" : "267740305", 
+              "_key" : "267740305", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/268723345", 
+              "_rev" : "268723345", 
+              "_key" : "268723345", 
+              "name" : "Eve" 
+            }, 
+            { 
+              "_id" : "persons/268067985", 
+              "_rev" : "268067985", 
+              "_key" : "268067985", 
+              "name" : "Bob" 
+            }, 
+            { 
+              "_id" : "persons/268330129", 
+              "_rev" : "268330129", 
+              "_key" : "268330129", 
+              "name" : "Charlie" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/269575313", 
+              "_rev" : "269575313", 
+              "_key" : "269575313", 
+              "_from" : "persons/268723345", 
+              "_to" : "persons/267740305" 
+            }, 
+            { 
+              "_id" : "knows/269771921", 
+              "_rev" : "269771921", 
+              "_key" : "269771921", 
+              "_from" : "persons/268723345", 
+              "_to" : "persons/268067985" 
+            }, 
+            { 
+              "_id" : "knows/268985489", 
+              "_rev" : "268985489", 
+              "_key" : "268985489", 
+              "_from" : "persons/267740305", 
+              "_to" : "persons/268067985" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/267740305", 
+              "_rev" : "267740305", 
+              "_key" : "267740305", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/268723345", 
+              "_rev" : "268723345", 
+              "_key" : "268723345", 
+              "name" : "Eve" 
+            }, 
+            { 
+              "_id" : "persons/268067985", 
+              "_rev" : "268067985", 
+              "_key" : "268067985", 
+              "name" : "Bob" 
+            }, 
+            { 
+              "_id" : "persons/267740305", 
+              "_rev" : "267740305", 
+              "_key" : "267740305", 
+              "name" : "Alice" 
+            } 
+          ] 
+        } 
+      ] 
+    } 
+  }, 
+  "error" : false, 
+  "code" : 200 
+}
+
+</pre><p> Edges should only be included once globally, but nodes are included every time they are visited:<pre class="fragment">unix&gt; curl -X POST --data @- --dump - http://localhost:8529/_api/traversal
+{"startVertex":"persons/273966225","edgeCollection":"knows","direction":"any","uniqueness":{"vertices":"none","edges":"global"}}
+
+HTTP/1.1 200 OK
+content-type: application/json; charset=utf-8
+
+{ 
+  "result" : { 
+    "visited" : { 
+      "vertices" : [ 
+        { 
+          "_id" : "persons/273966225", 
+          "_rev" : "273966225", 
+          "_key" : "273966225", 
+          "name" : "Alice" 
+        }, 
+        { 
+          "_id" : "persons/274949265", 
+          "_rev" : "274949265", 
+          "_key" : "274949265", 
+          "name" : "Eve" 
+        }, 
+        { 
+          "_id" : "persons/274293905", 
+          "_rev" : "274293905", 
+          "_key" : "274293905", 
+          "name" : "Bob" 
+        }, 
+        { 
+          "_id" : "persons/273966225", 
+          "_rev" : "273966225", 
+          "_key" : "273966225", 
+          "name" : "Alice" 
+        }, 
+        { 
+          "_id" : "persons/274556049", 
+          "_rev" : "274556049", 
+          "_key" : "274556049", 
+          "name" : "Charlie" 
+        }, 
+        { 
+          "_id" : "persons/274752657", 
+          "_rev" : "274752657", 
+          "_key" : "274752657", 
+          "name" : "Dave" 
+        } 
+      ], 
+      "paths" : [ 
+        { 
+          "edges" : [ ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/273966225", 
+              "_rev" : "273966225", 
+              "_key" : "273966225", 
+              "name" : "Alice" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/275801233", 
+              "_rev" : "275801233", 
+              "_key" : "275801233", 
+              "_from" : "persons/274949265", 
+              "_to" : "persons/273966225" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/273966225", 
+              "_rev" : "273966225", 
+              "_key" : "273966225", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/274949265", 
+              "_rev" : "274949265", 
+              "_key" : "274949265", 
+              "name" : "Eve" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/275801233", 
+              "_rev" : "275801233", 
+              "_key" : "275801233", 
+              "_from" : "persons/274949265", 
+              "_to" : "persons/273966225" 
+            }, 
+            { 
+              "_id" : "knows/275997841", 
+              "_rev" : "275997841", 
+              "_key" : "275997841", 
+              "_from" : "persons/274949265", 
+              "_to" : "persons/274293905" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/273966225", 
+              "_rev" : "273966225", 
+              "_key" : "273966225", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/274949265", 
+              "_rev" : "274949265", 
+              "_key" : "274949265", 
+              "name" : "Eve" 
+            }, 
+            { 
+              "_id" : "persons/274293905", 
+              "_rev" : "274293905", 
+              "_key" : "274293905", 
+              "name" : "Bob" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/275801233", 
+              "_rev" : "275801233", 
+              "_key" : "275801233", 
+              "_from" : "persons/274949265", 
+              "_to" : "persons/273966225" 
+            }, 
+            { 
+              "_id" : "knows/275997841", 
+              "_rev" : "275997841", 
+              "_key" : "275997841", 
+              "_from" : "persons/274949265", 
+              "_to" : "persons/274293905" 
+            }, 
+            { 
+              "_id" : "knows/275211409", 
+              "_rev" : "275211409", 
+              "_key" : "275211409", 
+              "_from" : "persons/273966225", 
+              "_to" : "persons/274293905" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/273966225", 
+              "_rev" : "273966225", 
+              "_key" : "273966225", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/274949265", 
+              "_rev" : "274949265", 
+              "_key" : "274949265", 
+              "name" : "Eve" 
+            }, 
+            { 
+              "_id" : "persons/274293905", 
+              "_rev" : "274293905", 
+              "_key" : "274293905", 
+              "name" : "Bob" 
+            }, 
+            { 
+              "_id" : "persons/273966225", 
+              "_rev" : "273966225", 
+              "_key" : "273966225", 
+              "name" : "Alice" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/275801233", 
+              "_rev" : "275801233", 
+              "_key" : "275801233", 
+              "_from" : "persons/274949265", 
+              "_to" : "persons/273966225" 
+            }, 
+            { 
+              "_id" : "knows/275997841", 
+              "_rev" : "275997841", 
+              "_key" : "275997841", 
+              "_from" : "persons/274949265", 
+              "_to" : "persons/274293905" 
+            }, 
+            { 
+              "_id" : "knows/275408017", 
+              "_rev" : "275408017", 
+              "_key" : "275408017", 
+              "_from" : "persons/274293905", 
+              "_to" : "persons/274556049" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/273966225", 
+              "_rev" : "273966225", 
+              "_key" : "273966225", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/274949265", 
+              "_rev" : "274949265", 
+              "_key" : "274949265", 
+              "name" : "Eve" 
+            }, 
+            { 
+              "_id" : "persons/274293905", 
+              "_rev" : "274293905", 
+              "_key" : "274293905", 
+              "name" : "Bob" 
+            }, 
+            { 
+              "_id" : "persons/274556049", 
+              "_rev" : "274556049", 
+              "_key" : "274556049", 
+              "name" : "Charlie" 
+            } 
+          ] 
+        }, 
+        { 
+          "edges" : [ 
+            { 
+              "_id" : "knows/275801233", 
+              "_rev" : "275801233", 
+              "_key" : "275801233", 
+              "_from" : "persons/274949265", 
+              "_to" : "persons/273966225" 
+            }, 
+            { 
+              "_id" : "knows/275997841", 
+              "_rev" : "275997841", 
+              "_key" : "275997841", 
+              "_from" : "persons/274949265", 
+              "_to" : "persons/274293905" 
+            }, 
+            { 
+              "_id" : "knows/275604625", 
+              "_rev" : "275604625", 
+              "_key" : "275604625", 
+              "_from" : "persons/274293905", 
+              "_to" : "persons/274752657" 
+            } 
+          ], 
+          "vertices" : [ 
+            { 
+              "_id" : "persons/273966225", 
+              "_rev" : "273966225", 
+              "_key" : "273966225", 
+              "name" : "Alice" 
+            }, 
+            { 
+              "_id" : "persons/274949265", 
+              "_rev" : "274949265", 
+              "_key" : "274949265", 
+              "name" : "Eve" 
+            }, 
+            { 
+              "_id" : "persons/274293905", 
+              "_rev" : "274293905", 
+              "_key" : "274293905", 
+              "name" : "Bob" 
+            }, 
+            { 
+              "_id" : "persons/274752657", 
+              "_rev" : "274752657", 
+              "_key" : "274752657", 
+              "name" : "Dave" 
+            } 
+          ] 
+        } 
+      ] 
+    } 
+  }, 
+  "error" : false, 
+  "code" : 200 
+}
+
+</pre><p> If the underlying graph is cyclic, <code>maxIterations</code> should be set:The underlying graph has two vertices <code>Alice</code> and <code>Bob</code>. With the directed edges:</p>
+<ul>
+<li><code>Alice</code> knows <code>Bob</code> _ <code>Bob</code> knows <code>Alice</code></li>
+</ul>
+<pre class="fragment">unix&gt; curl -X POST --data @- --dump - http://localhost:8529/_api/traversal
+{"startVertex":"persons/279209105","edgeCollection":"knows","direction":"any","uniqueness":{"vertices":"none","edges":"none"},"maxIterations":5}
+
+HTTP/1.1 500 Internal Error
+content-type: application/json; charset=utf-8
+
+{ 
+  "error" : true, 
+  "code" : 500, 
+  "errorNum" : 1909, 
+  "errorMessage" : "too many iterations" 
+}
+
+</pre>  </p>
+</div></div><!-- contents -->
+</div>
+
+
+	  </div><!-- .entry-content -->
+	</div><!-- #post-## -->
+
+
+      <div id="comments">
+
+
+  <p class="nocomments">Comments are closed.</p>
+
+
+
+</div><!-- #comments -->
+
+
+      </div><!-- #content -->
+    </div><!-- #container -->
+
+  <div style="clear:both;"></div>
+  </div><!-- #main -->
+
+
+
+</div><!-- #wrapper -->
+</div><!-- #surrounding -->
+
+
+  <div id="footer" role="contentinfo">
+    <div id="colophon">
+
+
+
+
+      <div id="footer-widget-area" role="complementary">
+
+	<div id="first" class="widget-area">
+	  <ul class="xoxo">
+		<li id="recent-posts-4" class="widget-container widget_recent_entries">	  <h3 class="widget-title">Recent Posts</h3>	<ul>
+	  <li>
+	<a href="http://www.arangodb.org/2013/05/22/replication-and-sharding-in-arangodb" title="Our plans on replication and sharding in ArangoDB">Our plans on replication and sharding in ArangoDB</a>
+	    </li>
+	  <li>
+	<a href="http://www.arangodb.org/2013/05/14/ideas-and-facts-from-scotland-js-in-edinburgh" title="Ideas and Facts from scotland.js in Edinburgh">Ideas and Facts from scotland.js in Edinburgh</a>
+	    </li>
+	  <li>
+	<a href="http://www.arangodb.org/2013/05/12/arangodb-1-3-0-released" title="ArangoDB 1.3.0 released">ArangoDB 1.3.0 released</a>
+	    </li>
+	  <li>
+	<a href="http://www.arangodb.org/2013/05/06/foxx-screencast-part-2" title="Foxx Screencast: Part 2">Foxx Screencast: Part 2</a>
+	    </li>
+	</ul>
+    </li><li id="text-5" class="widget-container widget_text"><h3 class="widget-title">Documentation</h3>     <div class="textwidget"><ul>
+  <li><a href="/quickstart">First step tutorial</a></li>
+  <li><a href="/manuals">Manual/documentation (HTML/PDF)</a></li>
+  <li><a href="/manuals/arangodb_1.0_shell_reference_card.pdf">ArangoDB Shell Reference Card (HTML/PDF)</a></li>
+  <li><a href="/try">Try ArangoDB online</a></li>
+  <li><a href="/api">API clients & 3rd party libs</a></li>
+        <li><a href="/logos">ArangoDB artwork/logos</a></li>
+</ul>
+</div>
+    </li><li id="text-7" class="widget-container widget_text"><h3 class="widget-title">Social Links</h3>      <div class="textwidget"><ul>
+  <li><a href="https://twitter.com/arangodb">ArangoDB on Twitter</a></li>
+  <li><a href="https://groups.google.com/group/arangodb">ArangoDB Google Group</a></li>
+  <li><a href="http://stackoverflow.com/questions/tagged/arangodb">ArangoDB questions on StackOverflow</a></li>
+  <li><a href="https://github.com/triagens/arangodb/issues?state=open">Issue Tracker at Github</a></li>
+</ul></div>
+    </li><li id="text-6" class="widget-container widget_text"><h3 class="widget-title">Roadmap</h3>	<div class="textwidget"><ul>
+  <li><a href="/roadmap/#v1.4">Backlog for Version 1.4</a></li>
+  <li><a href="/roadmap/#v1.x">Backlog for Version 1.x</a></li>
+</ul></div>
+    </li>	  </ul>
+	</div><!-- #first .widget-area -->
+
+
+
+
+      </div><!-- #footer-widget-area -->
+
+
+<!-- #site-generator -->
+
+    </div><!-- #colophon -->
+
+        <div class="copy">
+            Copyright 2013 ArangoDB | <a href="/imprint">Imprint</a>
+        </div>
+
+  </div><!-- #footer -->
+
+</body>
+</html>
